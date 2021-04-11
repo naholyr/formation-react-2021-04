@@ -1,0 +1,3193 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>React</title>
+
+    <meta name="description" content="Formation React 2015">
+    <meta name="author" content="ByteClub">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/beige.css" id="theme">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="css/highlight/styles/docco.css" id="highlight-theme">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <link rel="stylesheet" href="css/react.css">
+
+  </head>
+
+  <body>
+
+    <div class="reveal">
+      <div class="slides"><section id="intro" class="slide" data-state="intro" data-has-notes="false">
+<h1>React</h1>
+</section>
+
+<section id="plan" class="slide" data-has-notes="false">
+<h2>Plan (théorique)</h2><ul>
+<li><a href="#/decouverte">Découverte de React</a> et ses concepts</li>
+<li><a href="#/composant">Composant</a> avec <a href="#/jsx">JSX</a></li>
+<li><a href="#/create-react-app">Create React App</a></li>
+<li><a href="#/flux">Flux</a> et <a href="#/redux">Redux</a></li>
+<li>Aller plus loin :<ul>
+<li><a href="#/tests">Tests</a></li>
+<li><a href="#/isomorphisme">&quot;Isomorphisme&quot;</a></li>
+<li><a href="#/routing">Routing</a></li>
+<li><a href="#/legacy">Cohabitation avec le code legacy</a></li>
+<li><a href="#/context">Context</a></li>
+<li><a href="#/graphql-et-relay">GraphQL et Relay</a></li>
+</ul>
+</li>
+</ul>
+</section>
+
+<section id="chapter-decouverte" class="chapter">
+<section id="decouverte" class="slide cover"><h1>Découverte</h1></section>
+<section id="decouverte-intro-facebook" class="slide" data-has-notes="true">
+<h2>Génèse 2013</h2><p><img alt="facebook" src="images/logos/facebook.svg" class="raw">
+<br>
+<img alt="instagram" src="images/logos/instagram.svg" class="raw"></p><aside class="notes"><p>D&#39;abord écrit en tant que dérivé de PHP: XHP
+Le but est de venir une fois pour toute à bout du bug de synchro pour les notifs du chat facebook</p></aside>
+</section>
+
+<section id="decouverte-facebook-chat" class="slide" data-has-notes="false">
+<h2>Facebook chat</h2><pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">onMessage</span>(<span class="hljs-params">message</span>) </span>{
+  <span class="hljs-keyword">var</span> chatPanel = getChatPanel(message.thread);
+  chatPanel.append(message);
+}
+</code></pre>
+<p><img alt="facebook chat" src="images/facebook/facebook-chat.jpg"></p>
+</section>
+
+<section id="decouverte-facebook-chat-notifs" class="slide" data-has-notes="false">
+<h2>Facebook chat-notifs</h2><pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">onMessage</span>(<span class="hljs-params">message</span>) </span>{
+  <span class="hljs-keyword">var</span> chatPanel = getChatPanel(message.thread);
+  chatPanel.append(message);
+  chatNotif.increase(<span class="hljs-number">1</span>);
+  <span class="hljs-keyword">if</span> (chatPanel.hasFocus()) {
+    chatNotif.decrease(<span class="hljs-number">1</span>);
+  }
+}
+</code></pre>
+<p><img alt="facebook notifs" src="images/facebook/facebook-notifications.gif"></p>
+</section>
+
+<section id="decouverte-facebook-chat-page" class="slide" data-has-notes="false">
+<h2>Facebook chat page</h2><pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">onMessage</span>(<span class="hljs-params">message</span>) </span>{
+  <span class="hljs-keyword">var</span> chatPanel = getChatPanel(message.thread);
+  chatPanel.append(message);
+  chatNotif.increase(<span class="hljs-number">1</span>);
+  <span class="hljs-keyword">if</span> (chatPage.currentThread === message.thread) {
+    chatPage.append(message);
+  }
+  <span class="hljs-keyword">if</span> (chatPanel.hasFocus()
+      || chatPage.currentThread === message.thread) {
+    chatNotif.decrease(<span class="hljs-number">1</span>);
+  }
+}
+</code></pre>
+</section>
+
+<section id="decouverte-intro-libraries" class="slide" data-has-notes="false">
+<h2>Librairies frontend</h2><p><img alt="jquery" src="images/logos/jquery.svg" class="raw"><br>
+<img alt="mootools" src="images/logos/mootools.svg" class="raw"><br>
+<img alt="dojo" src="images/logos/dojo.svg" class="raw"></p>
+</section>
+
+<section id="decouverte-intro-frameworks" class="slide" data-has-notes="true">
+<h2>Frameworks frontend</h2><p><img alt="backbone" src="images/logos/backbone.svg" style="height: 100px" class="raw"><br>
+<img alt="ember" src="images/logos/ember.svg" style="height: 100px" class="raw"><br>
+<img alt="angular" src="images/logos/angularjs.svg" style=" height: 100px" class="raw"><br>
+<img alt="vue" src="images/logos/vue.svg" style="height: 100px" class="raw"></p><aside class="notes"><p><a href="http://teropa.info/blog/2015/03/02/change-and-its-detection-in-javascript-frameworks.html">Change and detection in JS Frameworks</a></p></aside>
+</section>
+
+<section id="decouverte-intro-followers" class="slide" data-has-notes="false">
+<h2>Followers frontend</h2><p><img alt="riot" src="images/logos/riot.svg" style="height: 100px" class="raw"><br>
+<img alt="preact" src="images/logos/preact.svg" style="height: 100px" class="raw"><br>
+<img alt="inferno" src="images/logos/inferno.svg" style="height: 100px" class="raw"></p>
+</section>
+
+<section id="decouverte-intro-outsiders" class="slide" data-has-notes="false">
+<h2>Outsiders frontend</h2><p><img alt="polymer" src="images/logos/polymer.svg" style="height: 100px" class="raw"><br>
+<img alt="meteor" src="images/logos/meteor.svg" class="raw"></p>
+</section>
+
+<section id="decouverte-intro-ecosystems" class="slide" data-has-notes="false">
+<h2>Ecosystems frontend</h2><p><img alt="elm" src="images/logos/elm.svg" class="raw"><br>
+<img alt="clojure" src="images/logos/clojure.svg" class="raw"></p>
+</section>
+
+<section id="decouverte-concepts" class="slide" data-has-notes="false">
+<h2>Concepts</h2><ul>
+<li>MVC</li>
+<li>Data-Binding</li>
+<li>Modules</li>
+<li>…</li>
+</ul>
+</section>
+
+<section id="decouverte-concepts-immutabilite" class="slide" data-has-notes="false">
+<h2>Concepts</h2><ul>
+<li>MVC</li>
+<li>Data-Binding</li>
+<li>Modules</li>
+<li>…</li>
+<li>Composants</li>
+<li>Immutabilité</li>
+<li>Fonctionnel</li>
+</ul>
+<p>Concepts anciens et modernes, remis en avant par React</p>
+</section>
+
+<section id="decouverte-principes-vue" class="slide" data-has-notes="false">
+<h2>Principes de base</h2><h3>Le &quot;V&quot; de &quot;MVC&quot; (old)</h3><ul>
+<li>React n&#39;est pas un framework &quot;full-stack&quot;</li>
+<li>React n&#39;est pas non plus qu&#39;un moteur de template</li>
+<li>Gestion de toute la logique de rendu</li>
+<li>Composants graphiques (widgets)</li>
+</ul>
+</section>
+
+<section id="decouverte-renderers" class="slide" data-has-notes="false">
+<h2>Indépendant du type de rendu</h2><ul>
+<li><code>react-dom</code> navigateurs</li>
+<li><code>react-dom/server</code> sérialization</li>
+<li><code>react-native</code> iOS/Android</li>
+<li><code>react-canvas</code> pixels sur <code>&lt;canvas&gt;</code></li>
+<li><code>react-blessed</code> shell (Ncurses)</li>
+<li><code>react-vr</code> WebGL, WebVR (Oculus)</li>
+<li><code>react-music</code> WebAudio WebMIDI</li>
+<li><code>gl-react</code> shaders OpenGL</li>
+<li>…</li>
+</ul>
+</section>
+
+<section id="decouverte-principes-simplicite" class="slide" data-has-notes="false">
+<h2>Principes de base</h2><h3>Simplicité</h3><ul>
+<li>Un composant est réduit à sa fonction de rendu</li>
+<li>La fonction génère une sortie (ex. arbre DOM)</li>
+<li>La vue complète = retour de la fonction de rendu du composant racine</li>
+</ul>
+</section>
+
+<section id="decouverte-principes-performances" class="slide" data-has-notes="false">
+<h2>Principes de base</h2><h3>Performances</h3><ul>
+<li>Le DOM est <strong>LE</strong> maillon faible</li>
+<li>Remplacer l&#39;intégralité du DOM à chaque fois que l&#39;état d&#39;un composant change : <strong>GAME OVER</strong></li>
+</ul>
+<p><img alt="DOM Tree" src="images/dom-tree.png" width="400"></p>
+</section>
+
+<section id="decouverte-principes-performances-virtual-dom" class="slide" data-has-notes="true">
+<h2>Principes de base</h2><h3>Performances : Virtual DOM (Reconciliation)</h3><ul>
+<li>Optimiser les <strong>reflow</strong> et les <strong>repaint</strong> gourmands.</li>
+<li>Solution : ne toucher qu&#39;aux parties réellement modifiées<ul>
+<li>Fonction de rendu = retourner un arbre</li>
+<li>Comparaison des arbres = opérations à effectuer</li>
+</ul>
+</li>
+</ul><aside class="notes"><p>Autres challengers sur le terrain: glimmer (lié à Ember), virtual-dom.js, incremental-dom.js (by Google, touche d&#39;avantage le vrai DOM, + long mais - de conso mémoire)</p></aside>
+</section>
+
+<section id="decouverte-version" class="slide" data-has-notes="true">
+<h2>Version</h2><p><a href="https://github.com/facebook/react/blob/master/CHANGELOG.md"><em>Current stable</em> <strong>17.0</strong> (oct. 2020)</a></p>
+<p><strong>Changements clé « récents »</strong> :</p>
+<ul>
+<li>Plus d&#39;event polling 🥳</li>
+<li>React.Profiler</li>
+<li><strong>Hooks!</strong> ❤️💖❤️</li>
+<li>Suspense / lazy 💕</li>
+<li>Nouvelle API pour les contextes &amp; refs</li>
+<li>Déprécation de certaines méthodes lifecycle</li>
+</ul><aside class="notes"><ul>
+<li><a href="https://facebook.github.io/react/blog/2015/10/07/react-v0.14.html">0.14</a><ul>
+<li><strong>Séparation de <code>react</code> et <code>react-dom</code></strong></li>
+<li><strong>Composants <em>stateless</em></strong> <code>(props) =&gt; ReactElement</code></li>
+<li>Séparation des addons (<code>react-addons-perf</code>, <code>react-addons-pure-render-mixin</code>, <code>react-addons-shallow-compare</code>, <code>react-addons-test-utils</code>, …)</li>
+<li><code>element.getDOMNode</code> → <code>ReactDOM.findDOMNode</code></li>
+</ul>
+</li>
+<li><a href="https://facebook.github.io/react/blog/2016/04/07/react-v15.html">15.0</a><ul>
+<li><strong>DOM moins pollué</strong>, plus de <code>data-reactid</code>, de <code>&lt;span&gt;</code> et <code>&lt;noscript&gt;</code> inutiles</li>
+<li><strong>SVG</strong> meilleur support, plus de whitelist</li>
+</ul>
+</li>
+</ul></aside>
+</section>
+
+<section id="decouverte-ide" class="slide" data-has-notes="false">
+<h2>IDEs dédiés</h2><p>Sur base Electron:</p>
+<p><a href="https://nuclide.io">Nuclide</a>
+<a href="http://reactide.io">Reactide</a></p>
+</section>
+</section>
+
+<section id="chapter-composant" class="chapter">
+<section id="composant" class="slide cover"><h1>Composant</h1></section>
+<section id="composant-html" class="slide" data-has-notes="false">
+<h2>Côté HTML : initialisation</h2><p>Un &lt;DIV&gt; comme &quot;point de montage&quot;</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"app"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">crossorigin</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/react@16/umd/react.development.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">crossorigin</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/react-dom@16/umd/react-dom.development.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+</code></pre>
+</section>
+
+<section id="composant-render" class="slide" data-has-notes="true">
+<h2>Côté JS : rendu d&#39;un composant</h2><p>Instancier, puis rendre un composant</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"app"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">crossorigin</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/react@16/umd/react.development.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">crossorigin</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/react-dom@16/umd/react-dom.development.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> root = React.createElement(Hello);
+ReactDOM.render(root, <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"app"</span>));
+</code></pre><aside class="notes"><p>Ne jamais monter le composant sur &lt;body&gt; directement (trop d&#39;interactions possibles avec les autres libs)</p></aside>
+</section>
+
+<section id="composant-composant" class="slide" data-has-notes="true">
+<h2>Côté JS : création d&#39;un composant</h2><p>Un composant = une fonction de rendu</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"app"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">crossorigin</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/react@16/umd/react.development.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">crossorigin</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/react-dom@16/umd/react-dom.development.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> root = React.createElement(Hello);
+ReactDOM.render(root, <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"app"</span>));
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Hello</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> React.createElement(
+    <span class="hljs-string">"div"</span>,
+    { <span class="hljs-attr">className</span>: <span class="hljs-string">"hello"</span> },
+    React.createElement(<span class="hljs-string">"span"</span>, {}, <span class="hljs-string">"Hello, "</span>),
+    React.createElement(<span class="hljs-string">"strong"</span>, {}, <span class="hljs-string">"World"</span>)
+  );
+}
+</code></pre><aside class="notes"><ul>
+<li>On peut avoir plusieurs points de montage pour monter des composants à différents endroits de la page</li>
+<li>S&#39;ils doivent communiquer entre eux → Flux (plus tard)</li>
+</ul></aside>
+</section>
+
+<section id="composant-composant-fonction" class="slide" data-has-notes="false">
+<h2>Composant fonction</h2><pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Composant</span> (<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">return</span> element
+}
+</code></pre>
+<ul>
+<li><strong>Entrée</strong> : les <code>props</code> viennent de <code>createElement</code></li>
+<li><strong>Sortie</strong> : la fonction retourne un élément <code>React</code></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Hello</span> (<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">return</span> React.createElement(<span class="hljs-string">'div'</span>, {<span class="hljs-attr">className</span>: <span class="hljs-string">'hello'</span>},
+    React.createElement(<span class="hljs-string">'span'</span>, {}, <span class="hljs-string">'Hello, '</span>),
+    React.createElement(<span class="hljs-string">'strong'</span>, {}, props.who))
+}
+
+<span class="hljs-keyword">var</span> root = React.createElement(Hello, { <span class="hljs-attr">who</span>: <span class="hljs-string">'World'</span> })
+</code></pre>
+</section>
+
+<section id="composant-composant-classe" class="slide" data-has-notes="false">
+<h2>Composant classe (ES5 👴🏻)</h2><pre><code class="lang-js"><span class="hljs-keyword">const</span> Composant = React.createClass({
+  <span class="hljs-attr">render</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> element
+  }
+})
+</code></pre>
+<ul>
+<li>Composant <em>stateful</em> (on y reviendra)</li>
+<li>Une méthode <code>render</code></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> Hello = React.createClass({
+  <span class="hljs-attr">render</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> ... this.props.who ...
+  }
+})
+
+<span class="hljs-keyword">var</span> root = React.createElement(Hello, { <span class="hljs-attr">who</span>: <span class="hljs-string">'World'</span> })
+</code></pre>
+</section>
+
+<section id="composant-composant-classe-es6" class="slide" data-has-notes="false">
+<h2>Composant classe (ES6 👍)</h2><pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Composant</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> element
+  }
+}
+</code></pre>
+<ul>
+<li>Même principe de base</li>
+<li>Utilisation des <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes">classes ES6</a> au lieu du helper<ul>
+<li><a href="https://ponyfoo.com/articles/es6">ES6 in 350 bullet points</a></li>
+</ul>
+</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Hello</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> ... this.props.who ...
+  }
+}
+
+<span class="hljs-keyword">var</span> root = React.createElement(Hello, { <span class="hljs-attr">who</span>: <span class="hljs-string">'World'</span> })
+</code></pre>
+</section>
+
+<section id="composant-state-es5" class="slide" data-has-notes="false">
+<h2>Composant <em>stateful</em> (ES5 👴🏻)</h2><ul>
+<li>Initialiser l&#39;état : <code>getInitialState</code></li>
+<li>Modifier l&#39;état : <code>setState</code></li>
+<li>Lire l&#39;état : <code>state</code></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> Counter = React.createClass({
+  <span class="hljs-attr">getInitialState</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> { <span class="hljs-attr">counter</span>: <span class="hljs-number">0</span> }
+  },
+  <span class="hljs-attr">incr</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">this</span>.setState({
+      <span class="hljs-attr">counter</span>: <span class="hljs-keyword">this</span>.state.counter + <span class="hljs-number">1</span>
+    })
+  },
+  <span class="hljs-attr">render</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">const</span> incr = <span class="hljs-keyword">this</span>.incr.bind(<span class="hljs-keyword">this</span>)
+    <span class="hljs-keyword">return</span> React.createElement(<span class="hljs-string">'button'</span>, { <span class="hljs-attr">onClick</span>: incr }, <span class="hljs-keyword">this</span>.state.counter)
+  }
+})
+</code></pre>
+</section>
+
+<section id="composant-state-es6" class="slide" data-has-notes="false">
+<h2>Composant <em>stateful</em> (ES6 👍)</h2><ul>
+<li>Initialiser l&#39;état : <code>constructor</code></li>
+<li>Modifier l&#39;état : <code>setState</code></li>
+<li>Lire l&#39;état : <code>state</code></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Counter</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">constructor</span> (props) {
+    <span class="hljs-keyword">super</span>(props)
+    <span class="hljs-keyword">this</span>.state = { <span class="hljs-attr">counter</span>: <span class="hljs-number">0</span> }
+    <span class="hljs-keyword">this</span>.incr = <span class="hljs-keyword">this</span>.incr.bind(<span class="hljs-keyword">this</span>)
+  }
+  incr () {
+    <span class="hljs-keyword">this</span>.setState({ <span class="hljs-attr">counter</span>: <span class="hljs-keyword">this</span>.state.counter + <span class="hljs-number">1</span> })
+  }
+  render () {
+    <span class="hljs-keyword">return</span> React.createElement(<span class="hljs-string">'button'</span>, { <span class="hljs-attr">onClick</span>: <span class="hljs-keyword">this</span>.incr }, <span class="hljs-keyword">this</span>.state.counter)
+  }
+}
+</code></pre>
+</section>
+
+<section id="composant-state-esnext" class="slide" data-has-notes="false">
+<h2>Composant <em>stateful</em> (ESNext 👍✨)</h2><ul>
+<li>Initialiser l&#39;état : <code>property init</code></li>
+<li>Modifier l&#39;état : <code>bound setState</code></li>
+<li>Lire l&#39;état : <code>state</code></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Counter</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  state = {
+    <span class="hljs-attr">counter</span>: <span class="hljs-number">0</span>
+  }
+  incr = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">this</span>.setState({ <span class="hljs-attr">counter</span>: <span class="hljs-keyword">this</span>.state.counter + <span class="hljs-number">1</span> })
+  }
+  render () {
+    <span class="hljs-keyword">return</span> React.createElement(<span class="hljs-string">'button'</span>, { <span class="hljs-attr">onClick</span>: incr }, <span class="hljs-keyword">this</span>.state.counter)
+  }
+}
+</code></pre>
+</section>
+
+<section id="composant-set-state" class="slide" data-has-notes="false">
+<h2>setState</h2><p>Ne jamais assigner une valeur au <code>state</code> directement:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">this</span>.state.foo = <span class="hljs-string">'bar'</span> <span class="hljs-comment">// non !</span>
+<span class="hljs-keyword">this</span>.setState({ <span class="hljs-attr">foo</span>: <span class="hljs-string">'bar'</span> }) <span class="hljs-comment">// déclenche le re-rendering</span>
+</code></pre>
+<p>L&#39;objet passé à <code>setState</code> est mergé (shallow) avec le state courant.</p>
+</section>
+
+<section id="composant-set-state-async" class="slide" data-has-notes="false">
+<h2>setState async</h2><p>React optimise de manière opaque les mises à jour du state pour des raisons de perf (batching).</p>
+<p>La seule façon sûre de lire le state et les props est donc d&#39;utiliser une fonction:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">this</span>.setState(<span class="hljs-function">(<span class="hljs-params">previousState, props</span>) =&gt;</span> ({
+  <span class="hljs-attr">foo</span>: previousState.foo + <span class="hljs-string">'bar'</span>
+}))
+</code></pre>
+</section>
+
+<section id="composant-set-state-functional" class="slide" data-has-notes="false">
+<h2>functional setState</h2><p>Les fonctions modifiant le state peuvent ainsi être déclarées en dehors du composant:</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">append</span> (<span class="hljs-params">key, str</span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">state</span>) =&gt;</span> ({
+    [key]: <span class="hljs-string">`<span class="hljs-subst">${state[key]}</span><span class="hljs-subst">${str}</span>`</span>
+  })
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Comp</span> </span>{
+…
+<span class="hljs-keyword">this</span>.setState(append(<span class="hljs-string">'foo'</span>, <span class="hljs-string">'bar'</span>))
+…
+}
+</code></pre>
+<p><a href="https://medium.freecodecamp.com/functional-setstate-is-the-future-of-react-374f30401b6b">Functional setState is the future of React</a></p>
+</section>
+
+<section id="composant-example-warning-key" class="slide" data-has-notes="false">
+<h2>Exemple complet</h2><pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Contact</span> (<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">return</span> React.createElement(<span class="hljs-string">'li'</span>, {},
+    React.createElement(<span class="hljs-string">'span'</span>, {}, <span class="hljs-string">'Name:'</span>),
+    React.createElement(<span class="hljs-string">'strong'</span>, {}, props.name)
+  )
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ContactList</span> (<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">return</span> React.createElement(<span class="hljs-string">'ul'</span>, {},
+    props.names.map(<span class="hljs-function"><span class="hljs-params">name</span> =&gt;</span>
+      React.createElement(Contact, { name }))
+  )
+}
+
+<span class="hljs-keyword">var</span> root = React.createElement(ContactList, { <span class="hljs-attr">names</span>: [<span class="hljs-string">'John'</span>, <span class="hljs-string">'Bob'</span>, <span class="hljs-string">'Arnold'</span>] })
+</code></pre>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions">ES6 arrow functions</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#New_notations_in_ECMAScript_6">ES6 shorthand objects</a></li>
+</ul>
+</section>
+
+<section id="composant-example-key-ok" class="slide" data-has-notes="false">
+<h2>Exemple complet</h2><pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Contact</span> (<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">return</span> React.createElement(<span class="hljs-string">'li'</span>, {},
+    React.createElement(<span class="hljs-string">'span'</span>, {}, <span class="hljs-string">'Name:'</span>),
+    React.createElement(<span class="hljs-string">'strong'</span>, {}, props.name)
+  )
+}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ContactList</span> (<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">return</span> React.createElement(<span class="hljs-string">'ul'</span>, {},
+    props.names.map(<span class="hljs-function">(<span class="hljs-params">name, key</span>) =&gt;</span>
+      React.createElement(Contact, { name, key }))
+  )
+}
+
+<span class="hljs-keyword">var</span> root = React.createElement(ContactList, { <span class="hljs-attr">names</span>: [<span class="hljs-string">'John'</span>, <span class="hljs-string">'Bob'</span>, <span class="hljs-string">'Arnold'</span>] })
+</code></pre>
+<p><img src="images/error-key.png" alt=""></p>
+<p><code>key</code> permet à React de &quot;suivre&quot; les éléments</p>
+</section>
+
+<section id="composant-more-defaults-es5" class="slide" data-has-notes="false">
+<h2>Initialisation de l&#39;état et des propriétés</h2><h3>ES5 👴🏻</h3><pre><code class="lang-js">React.createClass({
+
+  <span class="hljs-attr">getInitialState</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> initialState
+  },
+
+  <span class="hljs-attr">getDefaultProps</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> defaultProps
+  },
+
+  …
+})
+</code></pre>
+<p>Exemple : initialiser l&#39;état par les propriétés (<a href="https://facebook.github.io/react/tips/props-in-getInitialState-as-anti-pattern.html">Gare aux anti-patterns</a>)</p>
+</section>
+
+<section id="composant-more-defaults-es6" class="slide" data-has-notes="false">
+<h2>Initialisation de l&#39;état et des propriétés</h2><h3>ES6</h3><pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyComponent</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+
+  <span class="hljs-keyword">constructor</span> (props) {
+    <span class="hljs-keyword">super</span>({...defaultProps, ...props})
+
+    <span class="hljs-keyword">this</span>.state = initialState
+  }
+
+  …
+}
+</code></pre>
+<p>Alternatives : <code>MyComponent.defaultProps = …</code> ou <code>getDefaultProps()</code></p>
+</section>
+
+<section id="composant-more-defaults-stateless" class="slide" data-has-notes="false">
+<h2>Initialisation <strike>de l&#39;état et</strike> des propriétés</h2><h3>Composant <em>stateless</em></h3><pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">MyComponent</span> (<span class="hljs-params">props</span>) </span>{
+  …
+}
+
+MyComponent.defaultProps = defaultProps
+</code></pre>
+</section>
+
+<section id="composant-children" class="slide" data-has-notes="false">
+<h2>props.children</h2><p>Un composant parent peut choisir de manipuler ses enfants avant de les rendre:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">SlideShow</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">Slide</span> /&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">Slide</span> /&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">Slide</span> /&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">SlideShow</span>&gt;</span>
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SlideShow</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>{this.props.children}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  }
+}
+
+</code></pre>
+<p>Transclusion !</p>
+</section>
+
+<section id="composant-children-function" class="slide" data-has-notes="false">
+<h2>props.children fonction</h2><p>Tout peut être transmis via <code>props.children</code>, y compris une fonction :</p>
+<pre><code class="lang-js"><span class="hljs-comment">// Usage:</span>
+<span class="hljs-comment">// &lt;MouseCoords&gt;{(x, y) =&gt; &lt;strong&gt;Mouse: {x},{y}&lt;/strong&gt;}&lt;/MouseCoords&gt;</span>
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MouseCoords</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">constructor</span>() {
+    <span class="hljs-keyword">super</span>(...arguments)
+    <span class="hljs-keyword">this</span>.handleMove = <span class="hljs-keyword">this</span>.handleMove.bind(<span class="hljs-keyword">this</span>)
+    <span class="hljs-keyword">this</span>.state = {
+      <span class="hljs-attr">x</span>: <span class="hljs-number">0</span>,
+      <span class="hljs-attr">y</span>: <span class="hljs-number">0</span>
+    }
+  }
+  handleMove(evt) {
+    <span class="hljs-keyword">this</span>.setState({
+      <span class="hljs-attr">x</span>: evt.x,
+      <span class="hljs-attr">y</span>: evt.y
+    })
+  }
+  componentDidMount() {
+    <span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">'mousemove'</span>, <span class="hljs-keyword">this</span>.handleMove)
+  }
+  componentWillUnmount() {
+    <span class="hljs-built_in">window</span>.removeEventListener(<span class="hljs-string">'mousemove'</span>, <span class="hljs-keyword">this</span>.handleMove)
+  }
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;&gt;</span>{this.props.children(this.state.x, this.state.y)}<span class="hljs-tag">&lt;/&gt;</span>
+  }
+}</span>
+</code></pre>
+</section>
+
+<section id="composant-react-children" class="slide" data-has-notes="false">
+<h2>React.Children</h2><p><code>props.children</code> est une structure opaque, on ne peut savoir à l&#39;avance quel type d&#39;enfant va être reçu.</p>
+<p>Ainsi, pour itérer:</p>
+<pre><code class="lang-js">props.children.map(proj) <span class="hljs-comment">// erreur si props.children est une fonction</span>
+React.Children.map(<span class="hljs-keyword">this</span>.props.children, proj) <span class="hljs-comment">// protection</span>
+</code></pre>
+<p>ou compter:</p>
+<pre><code class="lang-js">props.children.length <span class="hljs-comment">// trompeur si props.children est une string</span>
+React.Children.count(<span class="hljs-keyword">this</span>.props.children) <span class="hljs-comment">// protection</span>
+</code></pre>
+</section>
+
+<section id="composant-react-children-to-array" class="slide" data-has-notes="false">
+<h2>React.Children</h2><ul>
+<li><code>React.Children.toArray()</code> → casting</li>
+<li><code>React.Children.only()</code> → protection dans le <code>render()</code></li>
+</ul>
+</section>
+
+<section id="composant-react-clone-element" class="slide" data-has-notes="false">
+<h2>React.cloneElement</h2><pre><code class="lang-js">…
+render () {
+  <span class="hljs-keyword">const</span> color = <span class="hljs-string">'red'</span>
+  <span class="hljs-keyword">return</span> React.Children.map(<span class="hljs-keyword">this</span>.props.children, c =&gt;
+    React.cloneElement(c, { color })
+  )
+}
+…
+</code></pre>
+</section>
+
+<section id="composant-components-tree" class="slide" data-has-notes="false">
+<p><img src="images/graphs/components-tree.svg" alt=""></p>
+</section>
+</section>
+
+<section id="chapter-cycle" class="chapter">
+<section id="cycle" class="slide cover"><h1>Cycle</h1></section>
+<section id="cycle-lifecycle" class="slide" data-has-notes="false">
+<h2>Cycle de vie d&#39;un composant <em>stateful</em></h2><p><a href="http://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/"><img src="images/graphs/lifecycle.png" alt=""></a></p>
+</section>
+
+<section id="cycle-will-mount" class="slide" data-has-notes="false">
+<h2><del>componentWillMount</del> constructor</h2><p><strong>Le composant est en cours de création</strong></p>
+<ul>
+<li>préparer des configs seulement dispos au runtime</li>
+<li>ne peut pas interagir avec le DOM</li>
+<li>ne peut pas appeler setState()</li>
+</ul>
+</section>
+
+<section id="cycle-did-mount" class="slide" data-has-notes="false">
+<h2>componentDidMount</h2><p><strong>Le DOM est prêt et cohérent avec les state/props</strong></p>
+<ul>
+<li>faire de l&#39;I/O pour récupérer de la data</li>
+<li>brancher des event listeners</li>
+<li>mettre à jour le composant avec setState()</li>
+</ul>
+</section>
+
+<section id="cycle-will-unmount" class="slide" data-has-notes="false">
+<h2>componentWillUnmount</h2><p><strong>Le composant va être détruit</strong></p>
+<ul>
+<li>nettoyage des timers</li>
+<li>nettoyage des event listeners (sur window par exemple)</li>
+<li>ne peut pas appeler setState()</li>
+</ul>
+</section>
+
+<section id="cycle-will-update" class="slide" data-has-notes="false">
+<h2><del>componentWillUpdate</del></h2><ul>
+<li>déprécié</li>
+</ul>
+<h3>getDerivedSateFromProps + getSnapshotBeforeUpdate</h3><ul>
+<li>pour organiser les effets de bord<ul>
+<li>sur le state au changement de props</li>
+<li>sur le DOM avant/après mise à jour</li>
+</ul>
+</li>
+</ul>
+</section>
+
+<section id="cycle-did-update" class="slide" data-has-notes="false">
+<h2>componentDidUpdate</h2><p><strong>Le DOM est à jour</strong></p>
+<ul>
+<li>recalculer le layout si besoin</li>
+<li>gérer les effets de bord sur le DOM</li>
+</ul>
+</section>
+
+<section id="cycle-will-receive-props" class="slide" data-has-notes="false">
+<h2><del>componentWillReceiveProps</del></h2><ul>
+<li>déprécié (utiliser <code>getDerivedStateFromProps</code> et/ou <code>getSnapshotBeforeUpdate</code> et/ou <code>componentDidUpdate</code>)</li>
+<li>reçoit nextProps</li>
+<li>pas appeler lors du premier rendu</li>
+</ul>
+</section>
+
+<section id="cycle-should-update" class="slide" data-has-notes="false">
+<h2>shouldComponentUpdate</h2><p><strong>Permet de bloquer des <code>render</code> inutiles</strong></p>
+<ul>
+<li>reçoit nextProps, nextState</li>
+<li>doit renvoyer un boolean</li>
+<li>facilité par des données <a href="https://github.com/facebook/immutable-js">immutables</a> (PureComponent)</li>
+<li><strong>attention</strong> : pas de rendu du parent = pas de rendu des enfants (ça peut faire des blagues :))</li>
+</ul>
+</section>
+</section>
+
+<section id="chapter-types" class="chapter">
+<section id="types" class="slide cover"><h1>Types</h1></section>
+<section id="types-proptypes" class="slide" data-has-notes="true">
+<h2><a href="https://facebook.github.io/react/docs/reusable-components.html"><code>propTypes</code></a></h2><p>Règles de validation pour contrôler le format des propriétés passées en entrée d&#39;un composant au runtime.</p>
+<pre><code class="lang-js">{
+  <span class="hljs-string">"num"</span>: PropTypes.number.isRequired,
+  <span class="hljs-string">"currency"</span>: PropTypes.oneOf(<span class="hljs-string">'$'</span>, <span class="hljs-string">'€'</span>, <span class="hljs-string">'£'</span>),
+  <span class="hljs-string">"persons"</span>: PropTypes.arrayOf(PropTypes.shape({
+    <span class="hljs-string">"name"</span>: PropTypes.string.isRequired,
+    <span class="hljs-string">"age"</span>: PropTypes.number
+  }))
+}
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// ES5</span>
+React.createClass({ <span class="hljs-attr">propTypes</span>: … })
+<span class="hljs-comment">// ES6</span>
+MyComponent.propTypes = …
+<span class="hljs-comment">// ESNext</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyComponents</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{ <span class="hljs-keyword">static</span> propTypes = … }
+<span class="hljs-comment">// Stateless</span>
+MyComponent.propTypes = …
+</code></pre><aside class="notes"><p>Dans les dernières versions de React, il faut faire <code>import PropTypes from &#39;prop-types&#39;</code></p></aside>
+</section>
+
+<section id="types-proptypes-flow" class="slide" data-has-notes="false">
+<h2>types with flow</h2><pre><code class="lang-js">type Props = {
+  <span class="hljs-attr">num</span>: number,
+  <span class="hljs-attr">currency</span>: <span class="hljs-string">'$'</span> | <span class="hljs-string">'€'</span> | <span class="hljs-string">'£'</span>,
+}
+type State = {
+  <span class="hljs-attr">rate</span>: number
+}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyComponent</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span>&lt;<span class="hljs-title">Props</span>, <span class="hljs-title">State</span>&gt; </span>{
+  <span class="hljs-keyword">static</span> defaultProps = {
+    <span class="hljs-attr">num</span>: <span class="hljs-number">42</span>,
+    <span class="hljs-attr">currency</span>: <span class="hljs-string">'$'</span>,
+  }
+  state = {
+    <span class="hljs-attr">rate</span>: <span class="hljs-number">1</span>
+  }
+}
+</code></pre>
+<ul>
+<li><a href="https://flow.org/en/docs/react/">React + Flow</a></li>
+<li><a href="https://github.com/gcanti/babel-plugin-tcomb">Tcomb + Flow</a></li>
+</ul>
+</section>
+
+<section id="types-proptypes-typescript" class="slide" data-has-notes="false">
+<h2>types with typescript</h2><pre><code class="lang-ts"><span class="hljs-keyword">type</span> Props = {
+  num: <span class="hljs-built_in">number</span>
+  currency: <span class="hljs-string">'$'</span> | <span class="hljs-string">'€'</span> | <span class="hljs-string">'£'</span>
+}
+<span class="hljs-keyword">type</span> State = {
+  rate: <span class="hljs-built_in">number</span>
+}
+<span class="hljs-keyword">class</span> MyComponent <span class="hljs-keyword">extends</span> React.Component&lt;Props, State&gt; {
+  <span class="hljs-keyword">static</span> defaultProps = {
+    num: <span class="hljs-number">42</span>,
+    currency: <span class="hljs-string">'$'</span>,
+  }
+  state = {
+    rate: <span class="hljs-number">1</span>
+  }
+}
+</code></pre>
+<ul>
+<li><a href="https://reactjs.org/docs/static-type-checking.html#typescript">React + Typescript</a></li>
+</ul>
+</section>
+
+<section id="types-comparison" class="slide" data-has-notes="false">
+<h2>Comparaison</h2><ul>
+<li><strong>prop-types</strong> = compatibilité maximale, pas besoin de compiler</li>
+<li><strong>flow</strong> = bonnes capacités d&#39;inférence (pas besoin de tout typer explicitement), possibilité de mettre les types en commentaires (pas forcément besoin de compiler)</li>
+<li><strong>typescript</strong> = pas seulement du typage (JavaScript++), grande communauté, évolutions rapides</li>
+</ul>
+</section>
+</section>
+
+<section id="chapter-hooks" class="chapter">
+<section id="hooks" class="slide cover"><h1>Hooks</h1></section>
+<section id="hooks-principe" class="slide" data-has-notes="false">
+<h2>Hooks 😍 : principe général</h2><ul>
+<li>Nouveauté introduite dans la 16.8</li>
+<li>Permet d&#39;accéder aux fonctionnalité de React depuis n&#39;importe quel composant (state, cycle de vie, etc.)</li>
+</ul>
+<p>Composant fonction &quot;stateful&quot; !</p>
+<pre><code class="lang-jsx"><span class="hljs-keyword">const</span> Counter = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> [count, setCount] = useState(<span class="hljs-number">0</span>)
+  <span class="hljs-keyword">const</span> incr = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> setCount(count + <span class="hljs-number">1</span>)
+
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{incr}</span>&gt;</span>{count}<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
+}
+</code></pre>
+<p>Le meilleur des deux mondes ?</p>
+</section>
+
+<section id="hooks-warning" class="slide" data-has-notes="false">
+<h2>Hooks 😥 : limites et avertissement</h2><ul>
+<li>L&#39;implémentation interne est basée sur l&#39;ordre d&#39;appel des hooks</li>
+<li><strong>PAS DE CONDITION, PAS DE BOUCLE</strong></li>
+<li>ESLint : <code>eslint-plugin-react-hooks</code></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> MyComponent = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> {
+  <span class="hljs-keyword">if</span> (props.test) useEffect(…) <span class="hljs-comment">// WRONG!</span>
+  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-keyword">if</span> (props.test) … ) <span class="hljs-comment">// OK</span>
+
+  props.list.forEach(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> states.push(useState(…))) <span class="hljs-comment">// WRONG!</span>
+  <span class="hljs-keyword">const</span> [states, setStates] = useState(props.list.map(…)) <span class="hljs-comment">// OK</span>
+}
+</code></pre>
+</section>
+
+<section id="hooks-state" class="slide" data-has-notes="false">
+<h2>Hooks principaux</h2><h3><a href="https://reactjs.org/docs/hooks-state.html">useState 😎</a></h3><p>Permet de créer des composants <em>stateful</em> sans classe</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> [value, setValue] = useState(initialValue)
+</code></pre>
+<ul>
+<li><code>initialValue</code> peut également être une fonction, qui doit retourner la valeur initiale (de manière synchrone) et ne sera appelée <em>que la première fois</em></li>
+</ul>
+</section>
+
+<section id="hooks-effect" class="slide" data-has-notes="false">
+<h2>Hooks principaux</h2><h3><a href="https://reactjs.org/docs/hooks-effect.html">useEffect 😍</a></h3><pre><code class="lang-js">useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  doSomethingOnMountOrUpdate()
+  <span class="hljs-comment">// Optionnaly return cleanup function</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    doSomethingOnUnmountOrBeforeUpdate()
+  }
+})
+</code></pre>
+<p><strong>Mais ça va tourner à chaque re-render ??</strong> Oui ! #fear</p>
+</section>
+
+<section id="hooks-skip-effect" class="slide" data-has-notes="false">
+<h2>Hooks principaux</h2><h3><a href="https://reactjs.org/docs/hooks-effect.html">useEffect 😍</a> : optimisation</h3><pre><code class="lang-js"><span class="hljs-comment">// Triggered only when values of var1 or var2 have changed between calls</span>
+useEffect(fn, [var1, var2])
+
+<span class="hljs-comment">// Triggered only once</span>
+useEffect(fn, [])
+</code></pre>
+<p><strong>Ouf !</strong> :)</p>
+</section>
+
+<section id="hooks-context" class="slide" data-has-notes="false">
+<h2>Hooks principaux</h2><h3><a href="https://reactjs.org/docs/hooks-reference.html#usecontext">useContext</a></h3><p>Permet d&#39;accéder à la valeur du contexte fourni (retourné par <a href="https://reactjs.org/docs/context.html">React.createContext</a>) :</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> value = useContext(Context)
+</code></pre>
+<ul>
+<li>Évite l&#39;imbrication de composants lorsqu&#39;on a plusieurs contextes</li>
+<li>Permet un accès hors-JSX pour les calculs</li>
+</ul>
+</section>
+
+<section id="hooks-others" class="slide" data-has-notes="false">
+<h2>Autres hooks</h2><h3><a href="https://reactjs.org/docs/hooks-reference.html#usereducer">useReducer</a></h3><p>Alternative à <code>useState</code> en mode reducer (couplé à <code>useContext</code> on peut refaire un Redux) :</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> [state, dispatch] = useReducer(reducer, initialArg, init)
+</code></pre>
+</section>
+
+<section id="hooks-others" class="slide" data-has-notes="false">
+<h2>Autres hooks</h2><h3><a href="https://reactjs.org/docs/hooks-reference.html#usecallback">useCallback 👷</a> et <a href="https://reactjs.org/docs/hooks-reference.html#usememo">useMemo 👷</a></h3><p>Utilisé pour la mémoification (tout comme <code>React.memo</code> mais sans avoir besoin de déclarer la version mémoisée de la fonction en global) :</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> value = useMemo(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> expensiveCompute(a, b), [a, b])
+</code></pre>
+</section>
+
+<section id="hooks-others" class="slide" data-has-notes="false">
+<h2>Autres hooks</h2><h3><a href="https://reactjs.org/docs/hooks-reference.html#useref">useRef 👷</a>  et <a href="https://reactjs.org/docs/hooks-reference.html#useimperativehandle">useImperativeHandle 👷</a> </h3><p>Équivalent à une propriété d&#39;instance, initialement dédiée aux <code>ref</code>s.</p>
+<h3><a href="https://reactjs.org/docs/hooks-reference.html#uselayouteffect">useLayoutEffect</a> , <a href="https://reactjs.org/docs/hooks-reference.html#usedebugvalue">useDebugValue</a>, …</h3>
+</section>
+
+<section id="hooks-conclusion1" class="slide" data-has-notes="false">
+<h2>Hooks : conclusion (1)</h2><p>Les hooks sont tout frais, <a href="https://reactjs.org/docs/hooks-faq.html">quelques questions se posent</a> :</p>
+<ul>
+<li>Faut-il convertir mes classes en fonctions + hooks ? 😱
+<strong>Non</strong> les classes ne disparaîtront pas de React, aucun besoin ni urgence</li>
+<li>C&#39;est quoi l&#39;avantage des hooks ? 😎
+<strong><a href="https://reactjs.org/docs/hooks-custom.html">Une façon plus efficace de partager des fonctionnalités</a></strong>, mais rien de fondamentalement infaisable avec les classes</li>
+</ul>
+</section>
+
+<section id="hooks-conclusion2" class="slide" data-has-notes="false">
+<h2>Hooks : conclusion (2)</h2><p>Les hooks sont tout frais, <a href="https://reactjs.org/docs/hooks-faq.html">quelques questions se posent</a> :</p>
+<ul>
+<li>Comment cohabiter avec les classes ? 😇
+<strong>Pas de hooks dans les classes</strong>, mais toujours possible d&#39;utiliser les deux types de composants sans problème</li>
+<li>Quel impact sur les tests ? 🚨
+<strong>Normalement aucun</strong>, il faut juste s&#39;assurer que les tests font bien un rendu avec support du &quot;lifecycle&quot;</li>
+</ul>
+</section>
+
+<section id="hooks-write-your-hooks" class="slide" data-has-notes="false">
+<h2>Hooks : écrire ses propres hooks 🤯</h2><p>(note : <a href="https://www.hooks.guide"><strong>il en existe déjà beaucoup</strong></a>)</p>
+<pre><code class="lang-jsx"><span class="hljs-keyword">const</span> MyComponent = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> [x, y] = useMousePosition()
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>
+      Mouse : {x},{y}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span></span>
+  )
+}
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> useMousePosition = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> [coords, setCoords] = useState([])
+  <span class="hljs-keyword">const</span> onMove = <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> setCoords([e.x, e.y])
+  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">'mousemove'</span>, onMove)
+    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">window</span>.removeEventListener(<span class="hljs-string">'mousemove'</span>, onMove)
+  }, [])
+  <span class="hljs-keyword">return</span> coords
+}
+</code></pre>
+<p>À comparer à la version <a href="#/composant-children-function"><em>render props</em></a>…</p>
+</section>
+</section>
+
+<section id="chapter-jsx" class="chapter">
+<section id="jsx" class="slide cover"><h1>JSX</h1></section>
+<section id="jsx-rappel-virtual-dom" class="slide" data-has-notes="false">
+<h2>Pourquoi JSX ?</h2><p><code>React.createElement</code> c&#39;est lourd… Pourquoi ne pas retourner directement du HTML ?</p>
+<ul>
+<li>HTML est coûteux à parser</li>
+<li>On veut justement éviter de manipuler du DOM</li>
+<li>On doit donc générer un arbre</li>
+</ul>
+<p>Quelles solutions pour se simplifier la vie ?</p>
+</section>
+
+<section id="jsx-raccourci" class="slide" data-has-notes="true">
+<h2>Utiliser un nom raccourci ?</h2><pre><code class="lang-js"><span class="hljs-keyword">const</span> h = React.createElement
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Contact</span> (<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">return</span> h(<span class="hljs-string">'li'</span>, {},
+    h(<span class="hljs-string">'span'</span>, {}, <span class="hljs-string">'Name:'</span>),
+    h(<span class="hljs-string">'strong'</span>, {}, props.name)
+  )
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ContactList</span> (<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">return</span> h(<span class="hljs-string">'ul'</span>, {},
+    props.names.map(<span class="hljs-function">(<span class="hljs-params">name, key</span>) =&gt;</span> h(Contact, { name, key }))
+  )
+}
+
+<span class="hljs-keyword">var</span> root = h(ContactList, { <span class="hljs-attr">names</span>: [<span class="hljs-string">'John'</span>, <span class="hljs-string">'Bob'</span>, <span class="hljs-string">'Arnold'</span>] })
+</code></pre>
+<p>C&#39;est déjà <a href="https://github.com/Matt-Esch/virtual-dom/tree/master/virtual-hyperscript"><strong>hyper</strong></a> mieux !</p><aside class="notes"><p>En pseudo code :</p>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> ReactElement = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">type, props</span>) </span>{
+  <span class="hljs-keyword">this</span>.type = type
+  <span class="hljs-keyword">this</span>.props = props
+}
+
+<span class="hljs-keyword">var</span> createElement = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">type, config, children</span>) </span>{
+  <span class="hljs-keyword">var</span> props = {}
+  <span class="hljs-keyword">for</span> (propName <span class="hljs-keyword">in</span> config) {
+    props[propName] = config[propName]
+  }
+  props.children = children
+
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ReactElement(type, props)
+}
+</code></pre>
+<p>HyperScript va encore plus loin : gestion des selecteurs CSS, props optionelles…</p></aside>
+</section>
+
+<section id="jsx-raccourci-destructuring" class="slide" data-has-notes="false">
+<h2>Autres raccourcis</h2><pre><code class="lang-js"><span class="hljs-keyword">const</span> { li, span, strong, ul } = React.DOM
+<span class="hljs-keyword">const</span> h = React.createElement
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Contact</span> (<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">return</span> li({},
+    span({}, <span class="hljs-string">'Name:'</span>),
+    strong({}, props.name)
+  )
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ContactList</span> (<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">return</span> ul({},
+    props.names.map(<span class="hljs-function">(<span class="hljs-params">name, key</span>) =&gt;</span> h(Contact, { name, key }))
+  )
+}
+
+<span class="hljs-keyword">var</span> root = h(ContactList, { <span class="hljs-attr">names</span>: [<span class="hljs-string">'John'</span>, <span class="hljs-string">'Bob'</span>, <span class="hljs-string">'Arnold'</span>] })
+</code></pre>
+</section>
+
+<section id="jsx-arbre" class="slide" data-has-notes="false">
+<h2>Représenter un arbre</h2><ul>
+<li>On cherche à représenter un arbre dont les feuilles ont des attributs</li>
+<li>Certains formats ont fait leur preuve pour représenter ce type de données :<ul>
+<li><strong>XML</strong> (voire HTML)</li>
+<li><strong>JSON</strong> (définir une convention pour les attributs)</li>
+<li><strong>YML</strong> (idem JSON, et tout format de sérialisation structuré)</li>
+</ul>
+</li>
+</ul>
+</section>
+
+<section id="jsx-dsl-xml" class="slide" data-has-notes="false">
+<h2>Une nouvelle syntaxe, un <em>DSL</em> basé sur XML</h2><pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Contact</span> (<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>Name: <span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>{ props.name }<span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span></span>
+  )
+}
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ContactList</span> (<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">const</span> contacts = props.names.map(<span class="hljs-function">(<span class="hljs-params">name, key</span>) =&gt;</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Contact</span> <span class="hljs-attr">name</span>=<span class="hljs-string">{</span> <span class="hljs-attr">name</span> } <span class="hljs-attr">key</span>=<span class="hljs-string">{</span> <span class="hljs-attr">key</span> } /&gt;</span>
+  ))
+
+  return <span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>{ contacts }<span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+}</span>
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> root = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">ContactList</span> <span class="hljs-attr">names</span>=<span class="hljs-string">{</span> ['<span class="hljs-attr">John</span>', '<span class="hljs-attr">Bob</span>', '<span class="hljs-attr">Arnold</span>'] } /&gt;</span></span>
+</code></pre>
+</section>
+
+<section id="jsx-jsx-transform" class="slide" data-has-notes="true">
+<h2>Transpilation</h2><pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Contact</span> (<span class="hljs-params">{ name }</span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>Name: <span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>{ name }<span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span></span>
+  )
+}
+</code></pre>
+<p>Avec <a href="https://babeljs.io">Babel</a> (ES6 cadeau au passage, on peut ressortir IE)</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://cdn.jsdelivr.net/babel/5.8.33/browser.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/babel"</span>&gt;</span><span class="undefined">
+…
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment">ES6 Destructuring Assignment</a></li>
+</ul><aside class="notes"><ul>
+<li>Syntaxe plus &quot;light&quot; que les appels imbriqués de fonctions</li>
+<li>Implique l&#39;utilisation de <strong>Babel</strong>, donc accès à tout EcmaScript 2015 :<ul>
+<li>Arrow functions</li>
+<li>Object spread, object shorthands…</li>
+<li>Default parameters, rest parameters…</li>
+<li>Destructuring</li>
+<li>Classes (adieu <code>React.createClass</code>)</li>
+<li>Modules !</li>
+<li>…</li>
+</ul>
+</li>
+</ul>
+<p><strong>ZE</strong> bonne approche pour React</p></aside>
+</section>
+
+<section id="jsx-summary" class="slide" data-has-notes="false">
+<h2>Résumé</h2><ul>
+<li><code>React</code> doit être dans le scope</li>
+<li>Très peu de syntaxe spécifique, on écrit du JS !<ul>
+<li>condition = opérateur ternaire, <code>||</code> ou <code>&amp;&amp;</code></li>
+<li>boucle = <code>map</code></li>
+</ul>
+</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-comment">// Composant "core" vs composant personnel</span>
+React.createElement(<span class="hljs-string">'tag'</span>) <span class="hljs-comment">// &lt;tag /&gt;</span>
+React.createElement(Tag)   <span class="hljs-comment">// &lt;Tag /&gt;</span>
+
+<span class="hljs-comment">// Attributs, expression</span>
+<span class="hljs-comment">// &lt;tag attr1="value" attr2={expression}&gt;&lt;tag2&gt;content&lt;/tag2&gt;{content}&lt;/tag&gt;</span>
+React.createElement(<span class="hljs-string">'tag'</span>,
+  { <span class="hljs-attr">attr1</span>: <span class="hljs-string">'value'</span>, <span class="hljs-attr">attr2</span>: expression },
+  React.createElement(<span class="hljs-string">'tag2'</span>, {}, <span class="hljs-string">'content'</span>), content)
+</code></pre>
+<p><em>#protip</em> <a href="https://medium.com/@adostes/enabling-optional-chaining-in-a-create-react-app-a9f626a515d9"><strong>Optional chaining</strong></a></p>
+</section>
+</section>
+
+<section id="chapter-create-react-app" class="chapter">
+<section id="create-react-app" class="slide cover"><h1>create-react-app</h1></section>
+<section id="create-react-app-objectif" class="slide" data-has-notes="false">
+<h2>Les objectifs</h2><ul>
+<li>Un environnement de développement complet</li>
+<li>Phase de <em>build</em> : ES2015, modules, JSX…</li>
+<li>Serveur de dev : hot reload</li>
+<li>Validation du code (lint)</li>
+</ul>
+</section>
+
+<section id="create-react-app-outils" class="slide" data-has-notes="false">
+<h2>Les outils</h2><ul>
+<li>Webpack</li>
+<li>Babel</li>
+<li>ESlint</li>
+<li><ul>
+<li>tous les plugins à installer et configurer</li>
+</ul>
+</li>
+</ul>
+<p>→ <em>JavaScript Fatigue</em></p>
+</section>
+
+<section id="create-react-app-stack-node" class="slide" data-has-notes="false">
+<h2>Pré-requis : node</h2><p>Pré-requis sur sa machine : <a href="http://nodejs.org"><code>node</code></a></p>
+</section>
+
+<section id="create-react-app-create-react-app" class="slide" data-has-notes="false">
+<h2><code>create-react-app</code></h2><p>Un outil qui propose une configuration par défaut qu&#39;on n&#39;a pas à gérer :</p>
+<pre><code class="lang-sh">npm install -g create-react-app
+</code></pre>
+<p>Tout est dans la boite !</p>
+<pre><code class="lang-sh">create-react-app my-app
+</code></pre>
+<p>→ <em>JavaScript Lazyness</em></p>
+<p>Édité par Facebook, devenu référence immédiate (adieu les boilerplates).</p>
+</section>
+
+<section id="create-react-app-power-user" class="slide" data-has-notes="false">
+<h2>Mode <em>power user</em></h2><p>Les outils et leur configuration <strong>ne sont pas surchargeables</strong>. C&#39;est volontaire. Quand on sera grands, on voudra personnaliser Webpack ou ESLint. On éjecte alors les petites roues :</p>
+<pre><code class="lang-sh">npm run eject
+</code></pre>
+</section>
+
+<section id="create-react-app-stack-conclusion" class="slide" data-has-notes="false">
+<h2>La <em>stack</em> : conclusion</h2><ul>
+<li>Installation rapide</li>
+<li>Stack de dév complète</li>
+<li>Outils populaires (choix consensuels)</li>
+<li>Configuration non contraignante</li>
+<li>Possibilité de passer en mode &quot;avancé&quot;<ul>
+<li>Pas besoin au début</li>
+<li>Indispensable à terme (config Webpack)</li>
+</ul>
+</li>
+</ul>
+</section>
+
+<section id="create-react-app-alternative-parcel" class="slide" data-has-notes="false">
+<h2>Alternative : Parcel</h2><ul>
+<li>Installation encore plus rapide</li>
+<li>Aucune configuration, mais surcharges possibles sans &quot;eject&quot;</li>
+<li>Pas de structure initiale imposée</li>
+</ul>
+</section>
+</section>
+
+<section id="chapter-flux" class="chapter">
+<section id="flux" class="slide cover"><h1>Flux</h1></section>
+<section id="flux-icc" class="slide" data-has-notes="false">
+<h2>Communication inter-composants</h2><ul>
+<li><strong>Communication descendante</strong> :<ul>
+<li>Le composant &quot;<em>parent</em>&quot; a un état qu&#39;il transmet par props</li>
+<li>On l&#39;appelle le &quot;<em>owner</em>&quot;</li>
+</ul>
+</li>
+<li><strong>Communication ascendante</strong> :<ul>
+<li>Le &quot;<em>owner</em>&quot; passe un callback au descendant</li>
+</ul>
+</li>
+</ul>
+<p><a href="https://facebook.github.io/react/docs/multiple-components.html">&quot;<em>In React, data flows from owner to owned component through props as discussed above.</em>&quot;</a></p>
+</section>
+
+<section id="flux-exercice1" class="slide" data-has-notes="false">
+<h2>Communication inter-composants : exercice</h2><p>Implémenter les composants <code>ContactForm</code> et <code>Root</code></p>
+<pre><code class="lang-js"><span class="hljs-comment">// Root.js</span>
+…
+  render () {
+    <span class="hljs-keyword">const</span> { names } = <span class="hljs-keyword">this</span>.state
+
+    <span class="hljs-keyword">return</span> (
+      &lt;div&gt;
+        &lt;ContactList names={ names } /&gt;
+        &lt;ContactForm onAdd={ ::this.addName } /&gt;
+      &lt;/div&gt;
+    )
+  }
+…
+</code></pre>
+</section>
+
+<section id="flux-problemes" class="slide" data-has-notes="false">
+<h2>Problèmes posés</h2><ul>
+<li>C&#39;est pas très <em>scalable</em> :<ul>
+<li>Communiquer avec son &quot;grand-parent&quot;</li>
+<li>Communiquer avec ses &quot;frères&quot;</li>
+<li>Communiquer avec ses &quot;petits-enfants&quot;</li>
+</ul>
+</li>
+<li>Dialogue avec le monde extérieur :<ul>
+<li>Ajax / localStorage / …</li>
+</ul>
+</li>
+</ul>
+</section>
+
+<section id="flux-components-mess" class="slide" data-has-notes="false">
+<p><img src="images/graphs/components-mess.svg" alt=""></p>
+</section>
+
+<section id="flux-solutions" class="slide" data-has-notes="false">
+<h2>Solutions possibles</h2><ul>
+<li>Communiquer avec son &quot;grand-parent&quot;<ul>
+<li>le parent intermédiaire fait le relais du callback</li>
+</ul>
+</li>
+<li>Communiquer avec ses &quot;frères&quot;<ul>
+<li>le parent commun relaie les props via un callback</li>
+</ul>
+</li>
+<li>Communiquer avec ses &quot;petits-enfants&quot;<ul>
+<li>l&#39;enfant intermédiaire transmet les props</li>
+</ul>
+</li>
+<li>Dialogue avec le monde extérieur :<ul>
+<li><em>Fetch</em> dans le <em>componentWillMount</em></li>
+</ul>
+</li>
+</ul>
+</section>
+
+<section id="flux-flux" class="slide" data-has-notes="false">
+<h2>Architecture Flux</h2><p><img src="images/flux-schema.png" alt=""></p>
+<ul>
+<li>Un dispatcher <strong>global</strong> reçoit les actions</li>
+<li>Les &quot;<em>stores</em>&quot; contiennent les données métier</li>
+<li>Le dispatcher les informe des actions</li>
+<li>Le composant se branche sur les stores</li>
+</ul>
+</section>
+
+<section id="flux-flux-solutions" class="slide" data-has-notes="false">
+<h2>Pourquoi Flux ?</h2><ul>
+<li>Flux unidirectionnel des informations</li>
+<li>Possibilité de logger les actions et les rejouer</li>
+<li>Un composant écoute directement les stores<ul>
+<li>Plus besoin de communication inter-composants</li>
+</ul>
+</li>
+<li>Les actions peuvent être déclenchées de l&#39;extérieur<ul>
+<li>Plus de requêtes dans <code>componentWillMount</code></li>
+</ul>
+</li>
+</ul>
+<p>Exercice : implémenter Flux</p>
+</section>
+
+<section id="flux-implementation" class="slide" data-has-notes="false">
+<h2>Implémentation</h2><ul>
+<li>Le dispatcher est un <code>EventEmitter</code> global<ul>
+<li>Déclencher une action = <code>e.emit</code></li>
+</ul>
+</li>
+<li>Un store est un <code>EventEmitter</code> global<ul>
+<li>Il écoute les actions du dispatcher</li>
+<li>Il maintient un état interne</li>
+<li>Il émet des événements pour notifier des mises à jour</li>
+</ul>
+</li>
+<li>Le composant écoute les événements du store</li>
+</ul>
+</section>
+
+<section id="flux-implementation-dispatcher" class="slide" data-has-notes="false">
+<h2>Implémentation : Dispatcher</h2><pre><code class="lang-sh">npm install --save jvent
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// dispatcher.js</span>
+<span class="hljs-keyword">import</span> Jvent <span class="hljs-keyword">from</span> <span class="hljs-string">'jvent'</span>;
+
+<span class="hljs-keyword">const</span> dispatcher = <span class="hljs-keyword">new</span> Jvent();
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> dispatcher;
+</code></pre>
+</section>
+
+<section id="flux-implementation-store" class="slide" data-has-notes="false">
+<h2>Implémentation : Store</h2><pre><code class="lang-js"><span class="hljs-comment">// stores/contacts.js</span>
+<span class="hljs-keyword">import</span> Jvent <span class="hljs-keyword">from</span> <span class="hljs-string">'jvent'</span>;
+<span class="hljs-keyword">import</span> dispatcher <span class="hljs-keyword">from</span> <span class="hljs-string">'../dispatcher'</span>;
+
+<span class="hljs-comment">// Le store est un Event Emitter</span>
+<span class="hljs-keyword">const</span> store = <span class="hljs-keyword">new</span> Jvent();
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> store;
+
+<span class="hljs-comment">// On expose les données</span>
+store.data = { <span class="hljs-attr">names</span>: [] };
+
+<span class="hljs-comment">// On écoute les actions (action = nom + paramètres)</span>
+dispatcher.on(<span class="hljs-string">'add-name'</span>, (params) =&gt;{
+  store.data.names.push(name); <span class="hljs-comment">// On met à jour les données métier</span>
+  store.emit(<span class="hljs-string">'change'</span>, store.data}); <span class="hljs-comment">// On notifie la vue</span>
+});
+</code></pre>
+</section>
+
+<section id="flux-implementation-dispatch" class="slide" data-has-notes="false">
+<h2>Implémentation : Dispatch d&#39;action</h2><pre><code class="lang-js"><span class="hljs-comment">// components/ContactForm.js</span>
+<span class="hljs-keyword">import</span> dispatcher <span class="hljs-keyword">from</span> <span class="hljs-string">'../dispatcher'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Root</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  …
+
+  <span class="hljs-comment">// Plus besoin de la prop "onAdd"</span>
+
+  submit (e) {
+    e.preventDefault();
+    <span class="hljs-keyword">this</span>.setState({ <span class="hljs-attr">value</span>: <span class="hljs-string">''</span> });
+
+    <span class="hljs-comment">// On dispatche l'action "add-name"</span>
+    dispatcher.emit(<span class="hljs-string">'add-name'</span>, <span class="hljs-keyword">this</span>.state.value);
+  }
+
+  …
+}
+</code></pre>
+</section>
+
+<section id="flux-implementation-ajax" class="slide" data-has-notes="false">
+<h2>Implémentation : Initialisation depuis l&#39;extérieur</h2><pre><code class="lang-js"><span class="hljs-comment">// app.js</span>
+<span class="hljs-keyword">import</span> dispatcher <span class="hljs-keyword">from</span> <span class="hljs-string">'./dispatcher'</span>;
+
+<span class="hljs-comment">// Fetch data</span>
+setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+  dispatcher.emit(<span class="hljs-string">'init-names'</span>, [<span class="hljs-string">'John'</span>, <span class="hljs-string">'Bob'</span>, <span class="hljs-string">'Arnold'</span>]);
+}, <span class="hljs-number">1000</span>);
+
+<span class="hljs-comment">// Init view</span>
+<span class="hljs-keyword">const</span> element = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Root</span> /&gt;</span>;</span>
+</code></pre>
+</section>
+
+<section id="flux-implementation-bind-store" class="slide" data-has-notes="true">
+<h2>Implémentation : Branchement sur le store</h2><pre><code class="lang-js"><span class="hljs-comment">// components/Root.js</span>
+<span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">'../stores/contacts'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Root</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+
+  <span class="hljs-comment">// On se branche sur les mises à jour du store</span>
+  componentDidMount () { contactsStore.on(<span class="hljs-string">'change'</span>, <span class="hljs-keyword">this</span>.update) }
+
+  <span class="hljs-comment">// Nettoyage au unmount (memory leak)</span>
+  componentWillUnmount () { contactsStore.off(<span class="hljs-string">'change'</span>, <span class="hljs-keyword">this</span>.update) }
+
+  <span class="hljs-keyword">constructor</span> (props) {
+    <span class="hljs-keyword">super</span>(props)
+    <span class="hljs-keyword">this</span>.update = ::<span class="hljs-keyword">this</span>.setState <span class="hljs-comment">// juste pour avoir une réf. commune au on/off</span>
+    <span class="hljs-keyword">this</span>.state = { ...store.data } <span class="hljs-comment">// init données</span>
+  }
+
+  …
+}
+</code></pre><aside class="notes"><p>Utilisation de <code>componentDidMount</code> et pas <code>componentWillMount</code> à cause de <em>Warning: setState(...): Can only update a mounted or mounting component.</em></p></aside>
+</section>
+
+<section id="flux-bind-store-fastidieux" class="slide" data-has-notes="true">
+<h2>Implémentation</h2><p>Répéter la logique de branchement aux stores est fastidieuse.</p>
+<p>Des solutions ?</p>
+<ul>
+<li><em>Higher Order Components</em></li>
+<li><em>Wrappers</em></li>
+<li>Héritage (limité aux composants classe, peu dynamique)</li>
+<li>Mixins (ancienne méthode qui tend à être mise au rebut)</li>
+<li>Décorateurs (ESNext, équivalent aux HOC)</li>
+</ul><aside class="notes"><p><a href="http://acdlite.github.io/flummox/docs/guides/why-flux-component-is-better-than-flux-mixin">HoC vs Mixin</a></p>
+<ul>
+<li>Declarative &gt; imperative</li>
+<li>Composition &gt; inheritance</li>
+<li>State is evil</li>
+</ul></aside>
+</section>
+
+<section id="flux-higher-order-component1" class="slide" data-has-notes="false">
+<h2>Implémentation : <em>Higher Order Component</em></h2><pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Root</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+
+  <span class="hljs-keyword">constructor</span> (props) {
+    <span class="hljs-keyword">super</span>(props)
+  }
+
+  render () {
+    <span class="hljs-keyword">const</span> { names } = <span class="hljs-keyword">this</span>.props
+
+    …
+  }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> connect(Root, store)
+</code></pre>
+</section>
+
+<section id="flux-higher-order-component2" class="slide" data-has-notes="true">
+<h2>Implémentation : <em>Higher Order Component</em></h2><pre><code class="lang-js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">connect</span> (<span class="hljs-params">Component, store</span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ConnectedComponent</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+    <span class="hljs-keyword">constructor</span> (props) {
+      <span class="hljs-keyword">super</span>(props);
+      <span class="hljs-keyword">this</span>._update = ::<span class="hljs-keyword">this</span>.setState;
+      <span class="hljs-keyword">this</span>.state = store.data;
+    }
+    componentDidMount () {
+      store.on(<span class="hljs-string">'change'</span>, <span class="hljs-keyword">this</span>._update);
+    }
+    componentWillUnmount () {
+      store.off(<span class="hljs-string">'change'</span>, <span class="hljs-keyword">this</span>._update);
+    }
+    render () {
+      <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Component</span> { <span class="hljs-attr">...this.props</span> } { <span class="hljs-attr">...this.state</span> } /&gt;</span>;
+    }
+  }
+}</span>
+</code></pre><aside class="notes"><p>Le <em>hot reload</em> ne marche plus aussi bien avec les HOC… La modification de composants entraine parfois la remise à 0 de l&#39;état de l&#39;application.</p></aside>
+</section>
+
+<section id="flux-wrappers" class="slide" data-has-notes="false">
+<h2>Implémentation : <em>Wrappers</em></h2><pre><code class="lang-js"><span class="hljs-comment">// components/Wrapper.js</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Wrapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">constructor</span> (props) {
+    …
+    <span class="hljs-keyword">this</span>.state = props.store.data
+  }
+
+  componentDidMount () { <span class="hljs-keyword">this</span>.props.store.on(<span class="hljs-string">'change'</span>, …) }
+
+  componentWillUnmount () { <span class="hljs-keyword">this</span>.props.store.off(<span class="hljs-string">'change'</span>, …) }
+
+  render () {
+    <span class="hljs-keyword">const</span> children = React.Children.map(<span class="hljs-keyword">this</span>.props.children, child =&gt;
+      React.cloneElement(child, { ...this.props, ...this.state }))
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>{ children }<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  }
+}
+
+<span class="hljs-comment">// app.js</span>
+<span class="hljs-keyword">const</span> element = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Wrapper</span> <span class="hljs-attr">store</span>=<span class="hljs-string">{</span> <span class="hljs-attr">contactStore</span> }&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">Root</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Connect</span>&gt;</span></span>
+</code></pre>
+</section>
+
+<section id="flux-flux-problemes" class="slide" data-has-notes="false">
+<h2>Une architecture idéale ?</h2><ul>
+<li>Des variables globales (store, dispatcher)<ul>
+<li>Difficile à tester</li>
+<li>Difficile à exécuter côté serveur</li>
+</ul>
+</li>
+<li>Données stockées dans le store<ul>
+<li>Application <em>stateful</em></li>
+</ul>
+</li>
+</ul>
+<p><a href="https://www.quora.com/What-are-the-pros-and-cons-of-React-js-and-Flux-Are-they-the-future-of-front-end-development">Pros and cons of React and Flux</a></p>
+</section>
+
+<section id="flux-implementations-reference" class="slide" data-has-notes="false">
+<h2>Quelques implémentations populaires</h2><ul>
+<li><strong><a href="http://redux.js.org/">Redux</a></strong> (+ <a href="https://github.com/rackt/react-redux">react-redux</a>)</li>
+<li><a href="https://github.com/reflux/refluxjs">Reflux</a></li>
+<li><a href="https://github.com/yahoo/fluxible">Fluxible</a> (Yahoo)</li>
+<li><a href="https://github.com/BinaryMuse/fluxxor">Fluxxor</a></li>
+<li><a href="https://github.com/martyjs/marty">Marty</a> (deprecated → Redux)</li>
+<li><a href="https://github.com/acdlite/flummox">Flummox</a> (deprecated → Redux)</li>
+<li><a href="https://github.com/Kureev/fflux">FFlux</a> (deprecated → Redux)</li>
+<li>…</li>
+</ul>
+</section>
+
+<section id="flux-darwin" class="slide" data-has-notes="false">
+<h2>GitHub Era</h2><p>Cf. <a href="https://github.com/kriasoft/react-starter-kit/issues/22">Which flux?</a> et <a href="https://github.com/enaqx/awesome-react">awesome-react</a> pour plus de ressources
+<img src="images/darwin.jpg" alt="darwin" width="300"></p>
+</section>
+</section>
+
+<section id="chapter-redux" class="chapter">
+<section id="redux" class="slide cover"><h1>Redux</h1></section>
+<section id="redux-intro" class="slide" data-has-notes="true">
+<h2>Présentation</h2><p><a href="http://redux.js.org/docs/introduction/PriorArt.html">Prior Art</a></p>
+<blockquote>
+<p>Can Redux be considered a Flux implementation?</p>
+<p>Yes, and no.</p>
+</blockquote>
+<p>by <a href="https://twitter.com/dan_abramov">Dan Abramov</a> (and <a href="https://github.com/acdlite">Andrew Clark</a>)</p>
+<p><img src="images/avatars/abramov.jpg" alt="Dan Abramov" style="width: 150px" /></p><aside class="notes"><p>Ce project est membre du collectif <a href="https://github.com/reactjs">react community</a></p></aside>
+</section>
+
+<section id="redux-principes" class="slide" data-has-notes="true">
+<h2>Vision</h2><p>Redux repose sur trois principes :</p>
+<ul>
+<li><em>Single source of truth</em> (store → Flux)</li>
+<li><em>State is read-only</em> (actions → Flux)</li>
+<li><em>Mutations are written as pure functions</em> (<em>reducers</em> → pas Flux)</li>
+</ul><aside class="notes"><p>Propriétés mise en avant d&#39;en d&#39;autres communautés, notamment ClojureScript avec Om de David Nolen</p></aside>
+</section>
+
+<section id="redux-actions" class="slide" data-has-notes="false">
+<h2>Action</h2><p>Un simple objet, seul le type est obligatoire :</p>
+<pre><code class="lang-js">{
+  <span class="hljs-attr">type</span>: <span class="hljs-string">'ADD_CONTACT'</span>,
+  <span class="hljs-attr">payload</span>: {
+    <span class="hljs-attr">name</span>: <span class="hljs-string">'Bob'</span>
+  }
+}
+</code></pre>
+<p>Pour le type, on pourrait être tenté d&#39;utiliser les <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol"><code>Symbol</code></a> ; hélas ils ne sont pas sérialisables.</p>
+<p>Un <code>standard</code> permet d&#39;uniformiser la manière de les rediger : <a href="https://github.com/acdlite/flux-standard-action">FSA</a></p>
+</section>
+
+<section id="redux-action-creators" class="slide" data-has-notes="true">
+<h2>Action creator</h2><p>Une fonction <em>pure</em> retournant une action :</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addContact</span> (<span class="hljs-params">name</span>) </span>{
+  <span class="hljs-keyword">return</span> { <span class="hljs-attr">type</span>: <span class="hljs-string">'ADD_CONTACT'</span>, <span class="hljs-attr">payload</span>: { name } }
+}
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deleteBuilding</span> (<span class="hljs-params">height, location</span>) </span>{
+  <span class="hljs-keyword">return</span> { <span class="hljs-attr">type</span>: <span class="hljs-string">'DELETE_BUILDING'</span>, <span class="hljs-attr">payload</span>: { height, location } }
+}
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">showRecent</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> { <span class="hljs-attr">type</span>: <span class="hljs-string">'CHANGE_DATE_FILTER'</span>, <span class="hljs-attr">payload</span>: { <span class="hljs-attr">ago</span>: <span class="hljs-number">3600</span> } }
+}
+</code></pre>
+<ul>
+<li><a href="#/helpers-createaction">Helper : <code>createAction</code></a></li>
+</ul><aside class="notes"><p>Comparer avec un &quot;actionDispatcher&quot; qu&#39;on retrouve dans Flux :</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addContact</span> (<span class="hljs-params">name</span>) </span>{
+  <span class="hljs-keyword">const</span> action = { <span class="hljs-attr">type</span>: <span class="hljs-string">'ADD_CONTACT'</span>, name }
+  dispatch(action)
+}
+</code></pre>
+<p>La différence est donc qu&#39;on ne dispatche pas directement. Pour dispatcher dans Redux on utilise la fonction <code>dispatch</code> accessible selon le contexte (vu plus tard)</p></aside>
+</section>
+
+<section id="redux-state" class="slide" data-has-notes="false">
+<h2>État de l&#39;application</h2><p>Avant de se lancer dans le développement, penser à la forme qu&#39;aura son état global (il évoluera bien sûr) :</p>
+<pre><code class="lang-js">{
+  <span class="hljs-attr">contacts</span>: {
+    [id]: <span class="hljs-string">'Bob'</span>
+  }
+}
+</code></pre>
+<p>Les <em>reducers</em> ont pour rôle de transformer cet état (en retournant un nouvel état)</p>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#New_notations_in_ECMAScript_2015">ES6 Dynamic Property Name</a></li>
+</ul>
+</section>
+
+<section id="redux-state" class="slide" data-has-notes="false">
+<h2>État de l&#39;application</h2><p>Avant de se lancer dans le développement, penser à la forme qu&#39;aura son état global (il évoluera bien sûr) :</p>
+<pre><code class="lang-js">{
+  <span class="hljs-attr">contacts</span>: {
+    [id]: <span class="hljs-string">'Bob'</span>
+  }
+}
+</code></pre>
+<p>Les <em>reducers</em> ont pour rôle de transformer cet état (en retournant un nouvel état)</p>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#New_notations_in_ECMAScript_2015">ES6 Dynamic Property Name</a></li>
+</ul>
+</section>
+
+<section id="redux-state-structure" class="slide" data-has-notes="false">
+<h2>Structurer l&#39;état</h2><ul>
+<li>Ne pas subir le diktat de l&#39;API serveur</li>
+<li>Ne pas subir le diktat des views</li>
+<li>{} &gt; [], un index évite les map()</li>
+<li>Bannir les duplications, préferer les selectors</li>
+<li><a href="https://github.com/reactjs/reselect">Mémoizer</a> les états dérivés</li>
+<li>Normaliser (<a href="https://github.com/paularmstrong/normalizr">normalizr</a>)</li>
+</ul>
+</section>
+
+<section id="redux-reducer" class="slide" data-has-notes="true">
+<h2>Reducers</h2><p>Un <em>reducer</em> est une fonction de transformation :</p>
+<pre><code class="lang-js">(previousState, action) =&gt; nextState
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">contactsApp</span> (<span class="hljs-params">state = initialState, action</span>) </span>{
+  <span class="hljs-keyword">switch</span> (action.type) {
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'ADD_CONTACT'</span>:
+      <span class="hljs-keyword">return</span> newState
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'TOGGLE_FRIENDS'</span>:
+      <span class="hljs-keyword">return</span> newState
+    <span class="hljs-keyword">default</span>:
+      <span class="hljs-keyword">return</span> state
+  }
+}
+</code></pre>
+<p>Inconvénient : On va vite se retrouver avec un <code>switch/case</code> énorme !</p><aside class="notes"><p>Parallèle avec <code>Array#reduce</code> qui prend en paramètre une fonction de réduction :</p>
+<pre><code class="lang-js">array.reduce(
+  <span class="hljs-function">(<span class="hljs-params">previousResult, currentValue</span>) =&gt;</span> nextResult,
+  initialResult
+)
+</code></pre></aside>
+</section>
+
+<section id="redux-reducer-split" class="slide" data-has-notes="true">
+<h2>Reducers : découpage</h2><p>Chaque <em>reducer</em> a en charge une partie de l&#39;arbre global :</p>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> { combineReducers } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux'</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">reducer1</span> (<span class="hljs-params">state = subState1, action</span>) </span>{
+  <span class="hljs-keyword">switch</span> (action.type) { … }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">reducer2</span> (<span class="hljs-params">state = subState2, action</span>) </span>{
+  <span class="hljs-keyword">switch</span> (action.type) { … }
+}
+
+<span class="hljs-keyword">const</span> rootReducer = combineReducers({
+  <span class="hljs-attr">sub1</span>: reducer1,
+  <span class="hljs-attr">sub2</span>: reducer2
+})
+
+<span class="hljs-comment">// État global: { sub1: …, sub2: … }</span>
+</code></pre>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters">ES6 Default Parameters</a></li>
+</ul><aside class="notes"><p>Ce qui se cache derrière combineReducers:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> rootReducer = <span class="hljs-function">(<span class="hljs-params">state = {}, action</span>) =&gt;</span> {
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attr">sub1</span>: reducer1(
+      state.subState1,
+      action
+    ),
+    <span class="hljs-attr">sub2</span>: reducer2(
+      state.subState2,
+      action
+    )
+  }
+
+}
+</code></pre>
+<p>Son implémentation :</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> combineReducers = <span class="hljs-function">(<span class="hljs-params">reducers</span>) =&gt;</span> {
+  <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">state = {}, action</span>) =&gt;</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">Object</span>.keys(reducers).reduce(
+      <span class="hljs-function">(<span class="hljs-params">nextState, key</span>) =&gt;</span> {
+        nextState[key] =&gt; reducers[key](
+          state[key],
+          action
+        )
+        <span class="hljs-keyword">return</span> nextState
+      },
+      {}
+    )
+  }
+}
+</code></pre></aside>
+</section>
+
+<section id="redux-reducer-creator" class="slide" data-has-notes="false">
+<h2>Reducers : <code>createReducer</code></h2><p>Quand on veut juste alléger le switch/case :</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> reducer = createReducer(initialState, {
+  <span class="hljs-attr">ADD_CONTACT</span>: addContact,
+  <span class="hljs-attr">TOGGLE_FRIEND</span>: toggleFriend
+})
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addContact</span> (<span class="hljs-params">state, { id, name }</span>) </span>{
+  <span class="hljs-keyword">const</span> contacts = { ...state.contacts, [id]: name }
+  <span class="hljs-comment">// On retourne un NOUVEL ÉTAT</span>
+  <span class="hljs-keyword">return</span> { ...state, contacts }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toggleFriend</span> (<span class="hljs-params">state, payload <span class="hljs-regexp">/*, meta, error */</span></span>) </span>{
+  …
+}
+</code></pre>
+<ul>
+<li><a href="#/helpers-createreducer">Helper : <code>createReducer</code></a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_operator">ESNext Object Spread</a></li>
+</ul>
+</section>
+
+<section id="redux-store" class="slide" data-has-notes="false">
+<h2>Store</h2><p>Pour rappel, un <em>store</em> :</p>
+<ul>
+<li>contient l&#39;état de l&#39;application</li>
+<li>notifie des mises à jour de l&#39;état — <code>subscribe()</code></li>
+<li>donne un accès en lecture à l&#39;état courant – <code>getState()</code></li>
+<li>écoute les actions — <code>dispatch()</code></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> { createStore } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux'</span>;
+
+<span class="hljs-keyword">const</span> store = createStore(reducer, initialState);
+
+store.subscribe(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> updateApp(store.getState()))
+
+store.dispatch(actionCreator())
+</code></pre>
+</section>
+
+<section id="redux-diagram" class="slide" data-has-notes="true">
+<h2>Architecture Redux</h2><p><img src="images/redux-diagram.jpg" alt=""></p><aside class="notes"><p>Dessiné par Andre Staltz, le créateur de Cycle.js</p></aside>
+</section>
+
+<section id="redux-async" class="slide" data-has-notes="false">
+<h2>Asynchrone</h2><p>On va découper nos actions en deux parties :</p>
+<ul>
+<li>Début de l&#39;opération</li>
+<li>Fin de l&#39;opération</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">requestAPI</span> (<span class="hljs-params">url</span>) </span>{
+  <span class="hljs-keyword">return</span> { <span class="hljs-attr">type</span>: <span class="hljs-string">'REQUEST'</span>, <span class="hljs-attr">payload</span>: { url } }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">receiveAPI</span> (<span class="hljs-params">response</span>) </span>{
+  <span class="hljs-keyword">return</span> { <span class="hljs-attr">type</span>: <span class="hljs-string">'RECEIVE'</span>, <span class="hljs-attr">payload</span>: { response }, <span class="hljs-attr">error</span>: response <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Error</span> }
+}
+</code></pre>
+<pre><code class="lang-js">store.dispatch(requestAPI(url)); <span class="hljs-comment">// Début</span>
+fetch(url)
+.then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> response.json())
+.then(<span class="hljs-function"><span class="hljs-params">json</span> =&gt;</span> store.dispatch(receiveAPI(json))) <span class="hljs-comment">// Fin OK</span>
+.catch(<span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> store.dispatch(receiveAPI(err))) <span class="hljs-comment">// Fin FAIL</span>
+</code></pre>
+</section>
+
+<section id="redux-async" class="slide" data-has-notes="false">
+<h2>Asynchrone : <code>redux-thunk</code></h2><p>Pour créer une action globale, on va d&#39;abord devoir la découpler du store. Mais comment <code>dispatch</code> ?</p>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> thunkMiddleware <span class="hljs-keyword">from</span> <span class="hljs-string">'redux-thunk'</span>;
+<span class="hljs-keyword">import</span> { createStore, applyMiddleware } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux'</span>;
+
+<span class="hljs-keyword">const</span> store = createStore(
+  rootReducer,
+  applyMiddleware(thunkMiddleware)
+)
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fetchAPI</span> (<span class="hljs-params">url</span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">dispatch</span>) =&gt;</span> {
+    dispatch(request(url)); <span class="hljs-comment">// Début</span>
+    fetch(url).then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> response.json())
+    .then(<span class="hljs-function"><span class="hljs-params">json</span> =&gt;</span> dispatch(receiveAPI(json))) <span class="hljs-comment">// Fin OK</span>
+    .catch(<span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> dispatch(receiveAPI(err))) <span class="hljs-comment">// Fin FAIL</span>
+  }
+}
+</code></pre>
+<pre><code class="lang-js">store.dispatch(fetchAPI(url))
+</code></pre>
+</section>
+
+<section id="redux-middlewares" class="slide" data-has-notes="true">
+<h2>Middlewares</h2><p><code>redux-thunk</code> est un <em>middleware</em>. Qu&#39;est-ce ? Une fonction :</p>
+<pre><code class="lang-js">store =&gt; <span class="hljs-function"><span class="hljs-params">next</span> =&gt;</span> action =&gt; anything
+</code></pre>
+<ul>
+<li><code>store</code> est limité aux méthodes <code>getState</code> et <code>dispatch</code><ul>
+<li><code>getState()</code> retourne l&#39;état courant du store</li>
+<li><code>dispatch(action)</code> lance une action</li>
+</ul>
+</li>
+<li><code>next(action)</code> passe au middleware suivant</li>
+<li><code>action</code> est l&#39;action dispatchée précédemment</li>
+<li>Résultat retourné de <code>dispatch()</code></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> logger = <span class="hljs-function">(<span class="hljs-params">{ dispatch, getState }</span>) =&gt;</span> next =&gt; <span class="hljs-function"><span class="hljs-params">action</span> =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'ACTION'</span>, action)
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'STATE'</span>, state)
+  <span class="hljs-keyword">return</span> next(action)
+}
+</code></pre><aside class="notes"><ul>
+<li>Oui, c&#39;est une fonction qui retourne une fonction qui retourne une fonction : currying.</li>
+</ul>
+<p>Sans les fonctions flêche, ça peut piquer :</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logger</span> (<span class="hljs-params">store</span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">next</span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">action</span>) </span>{
+      …
+    }
+  }
+}
+</code></pre></aside>
+</section>
+
+<section id="redux-redux-thunk" class="slide" data-has-notes="false">
+<h2>redux-thunk code</h2><pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createThunkMiddleware</span>(<span class="hljs-params">extraArgument</span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">{ dispatch, getState }</span>) =&gt;</span> next =&gt; <span class="hljs-function"><span class="hljs-params">action</span> =&gt;</span> {
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> action === <span class="hljs-string">'function'</span>) {
+      <span class="hljs-keyword">return</span> action(dispatch, getState, extraArgument);
+    }
+
+    <span class="hljs-keyword">return</span> next(action);
+  };
+}
+
+<span class="hljs-keyword">const</span> thunk = createThunkMiddleware();
+thunk.withExtraArgument = createThunkMiddleware;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> thunk;
+</code></pre>
+</section>
+
+<section id="redux-tools" class="slide" data-has-notes="false">
+<h2>Outils</h2><ul>
+<li><a href="https://github.com/fcomb/redux-logger"><code>redux-logger</code></a> et <a href="https://github.com/low-ghost/redux-node-logger"><code>redux-node-logger</code></a><ul>
+<li><a href="https://github.com/lapwinglabs/redux-debug"><code>redux-debug</code></a></li>
+</ul>
+</li>
+<li><a href="https://github.com/erikras/redux-form"><code>redux-form</code></a></li>
+<li><a href="https://github.com/gaearon/redux-thunk"><code>redux-thunk</code></a> et <a href="https://github.com/alanrubin/redux-simple-promise"><code>redux-simple-promise</code></a> pour l&#39;asynchrone</li>
+<li><a href="https://github.com/acdlite/redux-rx"><code>redux-rx</code></a></li>
+<li><a href="https://github.com/gaearon/redux-devtools">Redux DevTools</a></li>
+</ul>
+<p><a href="https://github.com/xgrommx/awesome-redux"><strong>awesome-redux</strong></a></p>
+</section>
+</section>
+
+<section id="chapter-react-redux" class="chapter">
+<section id="react-redux" class="slide cover"><h1>React-redux</h1></section>
+<section id="react-redux-redux-react" class="slide" data-has-notes="false">
+<h2>react-redux</h2><p>Même si <strong>Redux</strong> a été créé dès le départ pour fonctionner de concert avec <strong>React</strong>, il ne s&#39;occupe en réalité que de l&#39;état.</p>
+<p><a href="https://github.com/rackt/react-redux"><code>react-redux</code></a> offre une API légère en charge du <strong>binding</strong> entre store et components.</p>
+</section>
+
+<section id="react-redux-container-vs-component" class="slide" data-has-notes="false">
+<h2>Containers vs Components</h2><table style="font-size: 0.8em">
+  <tr>
+    <th></th><th>Containers</th><th>Dumb Components</th>
+  </tr>
+  <tr>
+    <th>Emplacement</th><td>Racine, route handlers</td><td>Branches et feuilles</td>
+  </tr>
+  <tr>
+    <th>Branché sur Redux</th><td>Oui</td><td>Non</td>
+  </tr>
+  <tr>
+    <th>Accès aux données</th><td>Souscrit au state Redux</td><td>Depuis les props</td>
+  </tr>
+  <tr>
+    <th>Changer les données</th><td>Dispatch des actions Redux</td><td>Invoque les callbacks reçus en props</td>
+  </tr>
+</table>
+</section>
+
+<section id="react-redux-provider" class="slide" data-has-notes="false">
+<h2>Provider</h2><p>On vient wrapper notre container racine avec <code>&lt;Provider&gt;</code></p>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> App <span class="hljs-keyword">from</span> <span class="hljs-string">'./containers/App'</span>;
+<span class="hljs-keyword">import</span> { Provider } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-redux'</span>;
+
+<span class="hljs-keyword">const</span> root = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span>=<span class="hljs-string">{store}</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">App</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Provider</span>&gt;</span></span>
+</code></pre>
+<p>Le store est alors disponible pour tous les composants descendants.</p>
+</section>
+
+<section id="react-redux-provider-code" class="slide" data-has-notes="false">
+<h2>Provider</h2><pre><code class="lang-js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Provider</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">constructor</span>(props, context) {
+    <span class="hljs-keyword">super</span>(props, context)
+    <span class="hljs-keyword">this</span>.store = props.store
+  }
+
+  getChildContext() {
+    <span class="hljs-keyword">return</span> { <span class="hljs-attr">store</span>: <span class="hljs-keyword">this</span>.store }
+  }
+
+  render() {
+    <span class="hljs-keyword">return</span> Children.only(<span class="hljs-keyword">this</span>.props.children)
+  }
+}
+
+Provider.propTypes = {
+  <span class="hljs-attr">store</span>: storeShape.isRequired,
+  <span class="hljs-attr">children</span>: PropTypes.element.isRequired
+}
+
+Provider.childContextTypes = {
+  <span class="hljs-attr">store</span>: storeShape.isRequired
+}
+</code></pre>
+</section>
+
+<section id="react-redux-connect" class="slide" data-has-notes="true">
+<h2>connect</h2><p><em>connecter</em> un composant à Redux revient à :</p>
+<ul>
+<li>sélectionner la portion du <em>state</em> qui le concerne</li>
+<li>choisir et binder les <em>actions</em> dont il a besoin</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> { connect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-redux'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyComponent</span> </span>{ … }
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> connect(select, actions)(MyComponent)
+</code></pre>
+<pre><code class="lang-js">@connect(select, actions)
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyComponent</span> </span>{ … }
+</code></pre>
+<ul>
+<li><a href="https://github.com/wycats/javascript-decorators">ESNext Decorators</a></li>
+</ul><aside class="notes"><ul>
+<li>Pour les décorateurs, penser au <code>&quot;stage&quot;: 0</code> dans <code>.babelrc</code></li>
+</ul></aside>
+</section>
+
+<section id="react-redux-select" class="slide" data-has-notes="false">
+<h2>select</h2><p>Une fonction <code>appState =&gt; componentProps</code></p>
+<p>Son but est de <em>mapper</em> l&#39;état global de l&#39;application vers les propriétés reçues par le composant.</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">mapStateToProps</span> (<span class="hljs-params">{ contacts, ui, data3… }</span>) </span>{
+  <span class="hljs-keyword">return</span> { contacts } <span class="hljs-comment">// pas besoin de récupérer la totalité de l'état</span>
+}
+</code></pre>
+<pre><code class="lang-js">const Contacts = ({ contacts }) =&gt; &lt;div&gt;{ contacts }&lt;/div&gt;
+
+export default connect(mapStateToProps)(Contacts)
+</code></pre>
+</section>
+
+<section id="react-redux-own-props" class="slide" data-has-notes="false">
+<h2>ownProps</h2><pre><code><span class="xml">const Contacts = (</span><span class="hljs-template-variable">{ contacts }</span><span class="xml">) =&gt;
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><span class="hljs-template-variable">{ contacts.map(c =&gt; &lt;Contact name="c.name" /&gt;) }</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+const _Contact = (</span><span class="hljs-template-variable">{ name, displayAvatar }</span><span class="xml">) =&gt;
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+    </span><span class="hljs-template-variable">{ displayAvatar &amp;&amp; &lt;img src={name + '.jpg'}</span><span class="xml"> /&gt; }
+    <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span></span><span class="hljs-template-variable">{ name }</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+</code></pre><pre><code class="lang-js"><span class="hljs-keyword">const</span> mapStateToProps = <span class="hljs-function">(<span class="hljs-params">state, ownProps</span>) =&gt;</span> ({
+  <span class="hljs-attr">displayAvatar</span>: state.ui.avatarsEnabled &amp;&amp; ownProps.name !== <span class="hljs-string">'Guest'</span>
+})
+
+<span class="hljs-keyword">const</span> Contact = connect(mapStateToProps)(_Contact)
+</code></pre>
+</section>
+
+<section id="react-redux-actions" class="slide" data-has-notes="false">
+<h2>actions</h2><p>Un objet <code>{ actionName: actionCreator }</code></p>
+<p>Chaque action sera injectée dans le composant sous la forme d&#39;une prop permettant de dispatcher l&#39;action correspondante.</p>
+<pre><code class="lang-js">const actions = {
+  addContact: (name) =&gt; ({ type: 'ADD_CONTACT', name })
+}
+
+const Btn = ({ addContact }) =&gt;
+  &lt;button onClick={ addContact('Bob') }&gt;Add&lt;/button&gt;
+
+export default connect(null, actions)(Btn)
+</code></pre>
+</section>
+
+<section id="react-redux-bindactioncreators" class="slide" data-has-notes="false">
+<h2>bindActionCreators</h2><p>Grâce à ce helper, on peut auto-dispatcher l&#39;action au sein des components.</p>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> { bindActionCreators } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux'</span>
+
+<span class="hljs-keyword">const</span> mapDispatchToProps = <span class="hljs-function">(<span class="hljs-params">dispatch</span>) =&gt;</span> ({
+  <span class="hljs-attr">actions</span>: bindActionCreators(contactActions, dispatch)
+})
+</code></pre>
+</section>
+
+<section id="react-redux-exercice" class="slide" data-has-notes="true">
+<h2>Exercice</h2><p>Remplacer notre implémentation maison de Flux par Redux</p>
+<p><img src="images/hard-work.jpg" alt=""></p><aside class="notes"><ul>
+<li>On observe vite les limites du <em>hot reload</em><ul>
+<li>Les composants fonction sont moins bien gérés (on perd parfois l&#39;état)</li>
+<li>Redux requiert un &quot;full refresh&quot; quand on modifie un reducer</li>
+</ul>
+</li>
+<li>Pas mieux avec webpack (testable dans &quot;step5-with-webpack&quot;)</li>
+</ul></aside>
+</section>
+</section>
+
+<section id="chapter-tests" class="chapter">
+<section id="tests" class="slide cover"><h1>Tests</h1></section>
+<section id="tests-enzyme" class="slide" data-has-notes="false">
+<h2>Enzyme</h2><p><a href="http://airbnb.io/enzyme/index.html">Enzyme</a> est une couche produite par AirBnB pour faciliter les tests.</p>
+<p>Il propose 3 renderers:</p>
+<ul>
+<li><code>shallow</code>: ne rend pas les components enfants</li>
+<li><code>mount</code>: se branche sur un <code>jsdom</code></li>
+<li><code>render</code>: génère du markup statique</li>
+</ul>
+</section>
+
+<section id="tests-objectifs" class="slide" data-has-notes="true">
+<h2>Tests: objectifs</h2><p>React est intimement lié à la construction de GUI.</p>
+<p>Voici par conséquent les étapes classiques de tests :</p>
+<ol>
+<li>Rendre un composant</li>
+<li>Trouver un des nodes DOM généré</li>
+<li>Vérifier son contenu, son apparence</li>
+<li>(optionnel) Interagir avec le composant</li>
+</ol><aside class="notes"><p>On comprend tout de suite qu&#39;il faut privilégier au maximum les composants stateless.</p></aside>
+</section>
+
+<section id="tests-test-runners" class="slide" data-has-notes="false">
+<h2>Test Runners</h2><ul>
+<li><strong>Jest</strong> est la solution intégrée à <code>create-react-app</code><ul>
+<li>Mocks</li>
+<li>Snapshots</li>
+</ul>
+</li>
+<li><strong>React Testing Library</strong> sera ajoutée<ul>
+<li>Render</li>
+<li>Simulation</li>
+<li>DOM</li>
+</ul>
+</li>
+</ul>
+<p>On peut se contenter d&#39;utiliser <code>ReactDOM</code> et <code>jsdom</code> mais ils sont moins fournis en outils utiles pour React.</p>
+</section>
+
+<section id="tests-rendering" class="slide" data-has-notes="false">
+<h2>Tests: rendering</h2><pre><code class="lang-js"><span class="hljs-keyword">import</span> { render } <span class="hljs-keyword">from</span> <span class="hljs-string">'@testing-library/react'</span>
+
+<span class="hljs-keyword">const</span> wrapper = render(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Component</span> /&gt;</span>)</span>
+</code></pre>
+<p>Le <em>wrapper</em> est un objet représentant le rendu final, on pourra l&#39;utiliser pour simuler des intéractions, rechercher, etc…</p>
+</section>
+
+<section id="tests-shallow-rendering" class="slide" data-has-notes="false">
+<h2>Shallow Rendering</h2><p>On fait par défaut un &quot;vrai&quot; rendu, ce qui inclut les <em>Higher Order Components</em> utilisés, qui viennent compliquer la tâche.</p>
+<ul>
+<li>Ne tester que les composants <em>dumb</em> ?</li>
+<li>Mais rend indirectement un composant <em>connecté</em> !<ul>
+<li>Ne faire que le premier niveau de rendu ?</li>
+</ul>
+</li>
+</ul>
+<p>On utilise <em>Enzyme</em></p>
+<ul>
+<li>Avantage : plus unitaire</li>
+<li>Inconvénient : couverture limitée</li>
+</ul>
+</section>
+
+<section id="tests-full-rendering-and-mocking" class="slide" data-has-notes="false">
+<h2>Shallow Rendering</h2><p>L&#39;autre option est de faire le &quot;vrai&quot; rendu, en simulant l&#39;environnement.</p>
+<p>On peut utiliser <em>jest.mock</em>, ou simplement un <em>render</em> personnalisé qui initialise l&#39;environnement nécessaire.</p>
+<ul>
+<li>Avantage : plus proche de la réalité, meilleure couverture</li>
+<li>Inconvénient : un peu plus de boulot</li>
+</ul>
+</section>
+
+<section id="tests-shallow-rendering-enzyme" class="slide" data-has-notes="false">
+<h2>Shallow Rendering : Enzyme</h2><p>Voir <a href="https://facebook.github.io/create-react-app/docs/running-tests#option-1-shallow-rendering">la doc officielle</a> pour l&#39;option <a href="https://airbnb.io/enzyme/">Enzyme</a></p>
+<pre><code class="lang-sh">npm install --save enzyme enzyme-adapter-react-16 react-test-renderer
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// src/setupTests.js</span>
+<span class="hljs-keyword">import</span> { configure } <span class="hljs-keyword">from</span> <span class="hljs-string">'enzyme'</span>;
+<span class="hljs-keyword">import</span> Adapter <span class="hljs-keyword">from</span> <span class="hljs-string">'enzyme-adapter-react-16'</span>;
+
+configure({ <span class="hljs-attr">adapter</span>: <span class="hljs-keyword">new</span> Adapter() });
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// App.test.js</span>
+<span class="hljs-keyword">import</span> { shallow } <span class="hljs-keyword">from</span> <span class="hljs-string">'enzyme'</span>;
+
+it(<span class="hljs-string">'renders without crashing'</span>, () =&gt; {
+  shallow(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">App</span> /&gt;</span>);
+});</span>
+</code></pre>
+</section>
+
+<section id="tests-full-rendering-react-testing-library-1" class="slide" data-has-notes="false">
+<h2>Full Rendering : React Testing Library</h2><p>Voir <a href="https://facebook.github.io/create-react-app/docs/running-tests#option-2-react-testing-library">la doc officielle</a> pour l&#39;option <a href="https://github.com/kentcdodds/react-testing-library">React Testing Library</a></p>
+<pre><code class="lang-sh">npm install --save @testing-library/react @testing-library/jest-dom
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// react-testing-library renders your components to document.body,</span>
+<span class="hljs-comment">// this will ensure they're removed after each test.</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">'@testing-library/react/cleanup-after-each'</span>;
+<span class="hljs-comment">// this adds jest-dom's custom assertions</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">'@testing-library/jest-dom/extend-expect'</span>;
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// App.test.js</span>
+<span class="hljs-keyword">import</span> { renderWithContext } <span class="hljs-keyword">from</span> <span class="hljs-string">'./utils'</span>;
+
+it(<span class="hljs-string">'renders without crashing'</span>, () =&gt; {
+  <span class="hljs-keyword">const</span> wrapper = renderWithContext(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">App</span> /&gt;</span>);
+});</span>
+</code></pre>
+</section>
+
+<section id="tests-full-rendering-react-testing-library-2" class="slide" data-has-notes="false">
+<h2>Full Rendering : React Testing Library</h2><pre><code class="lang-js"><span class="hljs-comment">// test-utils.js</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> renderWithContext = <span class="hljs-function">(<span class="hljs-params">element, initialState = defaultInitialState</span>) =&gt;</span> {
+  <span class="hljs-comment">// Create store</span>
+  <span class="hljs-keyword">const</span> store = createStore(reducer, initialState)
+
+  <span class="hljs-comment">// Render with store</span>
+  <span class="hljs-keyword">const</span> wrapper = render(
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span>=<span class="hljs-string">{store}</span>&gt;</span>
+      {element}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Provider</span>&gt;</span></span>
+  )
+
+  <span class="hljs-comment">// Expose store to be able to getState() and dispatch() if needed</span>
+  wrapper.store = store
+
+  <span class="hljs-keyword">return</span> wrapper
+}
+</code></pre>
+</section>
+
+<section id="tests-mock" class="slide" data-has-notes="false">
+<h2>Mocks</h2><p>On peut <em>mocker</em> des modules tiers :</p>
+<pre><code class="lang-js"><span class="hljs-comment">// api.test.js</span>
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> api <span class="hljs-keyword">from</span> <span class="hljs-string">'./api'</span>
+
+jest.mock(<span class="hljs-string">'axios'</span>, () =&gt; ({
+  <span class="hljs-attr">get</span>: <span class="hljs-keyword">async</span> path =&gt; ({ <span class="hljs-attr">status</span>: <span class="hljs-number">200</span>, <span class="hljs-attr">data</span>: { <span class="hljs-attr">ok</span>: <span class="hljs-literal">true</span> } })
+})
+
+it(<span class="hljs-string">'should be ok'</span>, <span class="hljs-keyword">async</span> () =&gt; {
+  expect(<span class="hljs-keyword">await</span> api.getStatus()).toEqual(<span class="hljs-literal">true</span>)
+})
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// api.js</span>
+<span class="hljs-keyword">import</span> axios <span class="hljs-keyword">from</span> <span class="hljs-string">'axios'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getStatus = <span class="hljs-keyword">async</span> () =&gt; {
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> axios.get(<span class="hljs-string">'/status'</span>)
+  <span class="hljs-keyword">return</span> response.data.ok
+}
+</code></pre>
+</section>
+
+<section id="tests-spy" class="slide" data-has-notes="false">
+<h2>Spy</h2><p>On peut <em>espionner</em> des fonctions :</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> spy = jest
+  <span class="hljs-comment">// If "console.warn" is called, I'll know</span>
+  .spyOn(<span class="hljs-built_in">console</span>, <span class="hljs-string">'warn'</span>)
+  <span class="hljs-comment">// I event replace its implementation so no more message comes in actual console</span>
+  .mockImplementationOnce(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {})
+
+<span class="hljs-comment">// Somewhere in tested code: "console.warn('toto')"</span>
+
+expect(spy).toHaveBeenCalledWith(<span class="hljs-string">'toto'</span>) <span class="hljs-comment">// OK</span>
+</code></pre>
+</section>
+
+<section id="tests-snapshots" class="slide" data-has-notes="false">
+<h2>Jest snapshots</h2><p>Lors du premier lancement, Jest sauvegarde tous les components sérializés dans <code>__snapshots__</code></p>
+<p>Il faut commiter ce dossier.</p>
+<p>Dans les lancements suivants, Jest se charge de comparer les nouveaux rendus avec les snapshots.</p>
+<pre><code class="lang-js">expect(wrapper).toMatchSnapshot()
+</code></pre>
+</section>
+
+<section id="tests-api" class="slide" data-has-notes="false">
+<h2>API</h2><ul>
+<li>Basic matchers : <a href="https://jestjs.io/docs/en/expect">jestjs.io/docs/en/expect</a><ul>
+<li><code>toEqual</code>, <code>toMatch</code>, <code>toMatchObject</code>, …</li>
+</ul>
+</li>
+<li>Custom DOM matchers : <a href="https://github.com/testing-library/jest-dom#table-of-contents">github:testing-library/jest-dom</a><ul>
+<li><code>toBeVisible</code>, <code>toHaveClass</code>, …</li>
+</ul>
+</li>
+<li>Querying : <a href="https://testing-library.com/docs/dom-testing-library/api-queries">testing-library/docs/api-queries</a><ul>
+<li><code>findByText</code>, <code>queryByDisplayValue</code>, …</li>
+</ul>
+</li>
+<li>Simulating : <a href="https://testing-library.com/docs/dom-testing-library/api-events">testing-library/docs/api-events</a><ul>
+<li><code>fireEvent.click</code>, <code>fireEvent.keyDown</code>, …</li>
+</ul>
+</li>
+</ul>
+</section>
+
+<section id="tests-protips-prop-types" class="slide" data-has-notes="false">
+<h2>#ProTip Prop Types</h2><p>La validation des <em>propTypes</em> ne génère qu&#39;un message en console, on veut que ça plante nos tests !</p>
+<pre><code class="lang-js"><span class="hljs-comment">// setupTests.js</span>
+
+<span class="hljs-comment">// Monkey-patch console to crash on prop-types error</span>
+<span class="hljs-keyword">const</span> _error = <span class="hljs-built_in">console</span>.error
+<span class="hljs-built_in">console</span>.error = <span class="hljs-function">(<span class="hljs-params">message, ...rest</span>) =&gt;</span> {
+  <span class="hljs-keyword">if</span> (<span class="hljs-regexp">/Failed prop type/</span>.test(message)) {
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(message)
+  }
+
+  _error.call(<span class="hljs-keyword">this</span>, message, ...rest)
+}
+</code></pre>
+</section>
+</section>
+
+<section id="chapter-isomorphisme" class="chapter">
+<section id="isomorphisme" class="slide cover"><h1>Isomorphisme</h1></section>
+<section id="isomorphisme-what" class="slide" data-has-notes="false">
+<h2>Application &quot;isomorphique&quot;</h2><p><img src="images/bernard-pivot.jpg" alt="Débat sur le terme &quot;isomorphique&quot;"></p>
+<ul>
+<li>S&#39;exécute aussi bien côté client que serveur</li>
+<li>Mêmes données = même résultat</li>
+</ul>
+<h3>Pourquoi ?</h3><p>Référencement, chargement plus rapide…</p>
+</section>
+
+<section id="isomorphisme-how" class="slide" data-has-notes="false">
+<h2>Principe général côté serveur :</h2><p>Côté client :</p>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> { render } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-dom'</span>;
+…
+render(reactElement, domElement)
+</code></pre>
+<p>Côté serveur :</p>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> { renderToString } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-dom/server'</span>;
+… <span class="hljs-comment">// Théoriquement le même code</span>
+<span class="hljs-keyword">const</span> html = renderToString(reactElement)
+</code></pre>
+</section>
+
+<section id="isomorphisme-challenge" class="slide" data-has-notes="true">
+<h2>Tout n&#39;est pas si simple…</h2><p>En pratique, tout n&#39;est pas &quot;iso&quot; :</p>
+<ul>
+<li>Attention aux <strong>singletons</strong> : une instance par requête<ul>
+<li>Pas de store global</li>
+</ul>
+</li>
+<li>Les <strong>interactions</strong> ne sont pas les mêmes<ul>
+<li>Normalement on s&#39;en fout</li>
+<li>Serveur = seulement génération initiale</li>
+</ul>
+</li>
+<li><strong>Chargement des données</strong> initiales<ul>
+<li>Côté client des appels HTTP</li>
+<li>Côté serveur des requêtes BDD</li>
+</ul>
+</li>
+</ul><aside class="notes"><ul>
+<li>Pour la question des singletons, dans <code>redux</code> seul le store contient l&#39;état, donc c&#39;est le seul singleton dont on doive s&#39;inquiéter (sauf autres parties de l&#39;application)</li>
+<li>Pour le chargement des données, une approche peut être d&#39;écrire deux couches modèles partageant <strong>la même API</strong> ainsi le code pourrait être le même<ul>
+<li>mais les traitements asynchrones ne seront pas traités de la même manière</li>
+<li>côté client on jette une requête qui dispatchera une action, on n&#39;a pas à se &quot;brancher&quot; dessus</li>
+<li>côté serveur on veut attendre que les données soient chargées, donc on doit attendre la résolution de l&#39;action pour répondre</li>
+</ul>
+</li>
+</ul></aside>
+</section>
+
+<section id="isomorphisme-state" class="slide" data-has-notes="false">
+<h2>L&#39;état de l&#39;application</h2><h3>Avant</h3><p>On partait d&#39;un état vide, qu&#39;on peuplait en lançant des actions d&#39;initialisation.</p>
+<pre><code class="lang-js">store.dispatch(fetchContacts());
+</code></pre>
+<h3>Après</h3><p>Côté serveur, on génère l&#39;état à partir de données récupérées, puis on le passe au client.</p>
+<p>Côté client, on part de cet état injecté. On ne lance plus d&#39;actions d&#39;initialisation !</p>
+</section>
+
+<section id="isomorphisme-store" class="slide" data-has-notes="true">
+<h2>Le store : mort aux singletons !</h2><p>On n&#39;exporte plus directement le store, mais une fonction <code>state =&gt; store</code> :</p>
+<pre><code class="lang-js"><span class="hljs-comment">// Avant</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> createStore(reducers, initialStore)
+
+<span class="hljs-comment">// Après</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> (state = {}) =&gt;
+  createStore(reducers, { ...initialStore, ...state })
+</code></pre>
+<ul>
+<li>côté serveur on génère le <code>state</code> <strong>avant</strong> de répondre</li>
+<li>côté client on utilise la valeur injectée par le serveur</li>
+</ul><aside class="notes"><p>Pourquoi injecter le <code>state</code> ?</p>
+<ul>
+<li>React va regénérer son arbre à partir de l&#39;état de l&#39;application</li>
+<li>État différent → Arbre différent</li>
+<li>Le contenu du &lt;DIV&gt; sera incohérent</li>
+</ul>
+<blockquote>
+<p>Warning: React attempted to reuse markup in a container but the checksum was invalid. This generally means that you are using server rendering and the markup generated on the server was not what the client was expecting. React injected new markup to compensate which works but you have lost many of the benefits of server rendering.</p>
+</blockquote>
+<p>S&#39;il est impossible de partager l&#39;état :</p>
+<ul>
+<li>Laisser tomber l&#39;isomorphique (pas de différences en perfs, et bien moins de charge côté serveur)</li>
+<li>Utiliser <code>renderToStaticMarkup</code> (référencement OK, et pas de tentative de réutilisation du DOM pour rien)</li>
+</ul></aside>
+</section>
+
+<section id="isomorphisme-store-app-client" class="slide" data-has-notes="false">
+<h2>Le store, côté client</h2><p>Ça ne change pas grand-chose :</p>
+<pre><code class="lang-js"><span class="hljs-comment">// Avant</span>
+<span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">'…/store'</span>;
+
+<span class="hljs-comment">// Après</span>
+<span class="hljs-keyword">import</span> configureStore <span class="hljs-keyword">from</span> <span class="hljs-string">'…/configure-store'</span>;
+<span class="hljs-keyword">const</span> store = configureStore(<span class="hljs-built_in">window</span>.APP_STATE)
+
+<span class="hljs-comment">// …</span>
+<span class="hljs-keyword">const</span> element = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span>=<span class="hljs-string">{</span> <span class="hljs-attr">store</span> }&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">Root</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Provider</span>&gt;</span></span>
+render(element, <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'app'</span>))
+</code></pre>
+<ul>
+<li><code>state</code> injecté en variable globale</li>
+</ul>
+</section>
+
+<section id="isomorphisme-store-app-client-compat-static" class="slide" data-has-notes="false">
+<h2>Rester compatible avec le mode <em>serverless</em></h2><p>Si on sait gérer le cas où l&#39;état global n&#39;est pas injecté, alors on peut aussi fonctionner en mode &quot;fichier statique&quot; :</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> hasState = !!<span class="hljs-built_in">window</span>.APP_STATE
+
+<span class="hljs-comment">// Serverless → état vide</span>
+<span class="hljs-keyword">const</span> state = hasState ? <span class="hljs-built_in">window</span>.APP_STATE : {}
+
+<span class="hljs-comment">// Initialisation du store</span>
+<span class="hljs-keyword">const</span> store = configureStore(state)
+
+<span class="hljs-comment">// Serverless → actions d'initialisation</span>
+<span class="hljs-keyword">if</span> (!hasState) {
+  store.dispatch(fetchContacts())
+}
+
+<span class="hljs-comment">// …</span>
+</code></pre>
+</section>
+
+<section id="isomorphisme-store-app-serveur" class="slide" data-has-notes="false">
+<h2>Le store, côté serveur</h2><p>Le code est le même que côté client :</p>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> configureStore <span class="hljs-keyword">from</span> <span class="hljs-string">'…/configure-store'</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderApp</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> getState() <span class="hljs-comment">// Génération de l'état de l'application</span>
+    .then(<span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> {
+      <span class="hljs-keyword">const</span> store = configureStore(state)
+
+      … <span class="hljs-comment">// Théoriquement le même code que côté client</span>
+
+      <span class="hljs-keyword">return</span> renderToString(reactElement)
+    })
+}
+</code></pre>
+</section>
+
+<section id="isomorphisme-data" class="slide" data-has-notes="false">
+<h2>Les données</h2><p>Côté client : <code>XMLHttpRequest</code>, <code>$.ajax</code>, <code>fetch</code>…</p>
+<p>Côté serveur : requêtes SQL, fichiers, requêtes HTTP…</p>
+<pre><code class="lang-js"><span class="hljs-comment">// model-server.js</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getState</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> query(<span class="hljs-string">'SELECT * FROM contacts'</span>)
+    <span class="hljs-comment">// On a récupéré les contacts</span>
+    <span class="hljs-comment">// L'état global est { "contacts": lesContacts }</span>
+    .then(<span class="hljs-function"><span class="hljs-params">contacts</span> =&gt;</span> ({ contacts }))
+}
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// model-client.js</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getState</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> fetch(<span class="hljs-string">'/contacts'</span>).then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json())
+    <span class="hljs-comment">// On a récupéré les contacts</span>
+    <span class="hljs-comment">// L'état global est { "contacts": lesContacts }</span>
+    .then(<span class="hljs-function"><span class="hljs-params">contacts</span> =&gt;</span> ({ contacts }))
+}
+</code></pre>
+</section>
+
+<section id="isomorphisme-html" class="slide" data-has-notes="false">
+<h2>Génération du HTML</h2><p>Idée : des commentaires pour injecter les résultats</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"UTF-8"</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>I'm in a React app!<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"app"</span>&gt;</span><span class="hljs-comment">&lt;!-- APP_HERE --&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-comment">&lt;!-- APP_STATE_HERE --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"build.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+</section>
+
+<section id="isomorphisme-html-server" class="slide" data-has-notes="false">
+<h2>Génération du HTML</h2><p>Idée : des commentaires pour injecter les résultats</p>
+<pre><code class="lang-js"><span class="hljs-comment">// State's HTML</span>
+<span class="hljs-keyword">const</span> stateHTML = <span class="hljs-string">'&lt;script&gt;window.APP_STATE='</span> + <span class="hljs-built_in">JSON</span>.stringify(state) + <span class="hljs-string">'&lt;/script&gt;'</span>
+
+<span class="hljs-comment">// App's HTML</span>
+<span class="hljs-keyword">const</span> element = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span>=<span class="hljs-string">{</span> <span class="hljs-attr">store</span> }&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">Root</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Provider</span>&gt;</span></span>;
+<span class="hljs-keyword">const</span> appHtml = renderToString(element);
+
+<span class="hljs-keyword">return</span> html
+  <span class="hljs-comment">// Inject app into global HTML</span>
+  .replace(<span class="hljs-regexp">/&lt;!-- APP_HERE --&gt;/</span>, appHtml)
+  <span class="hljs-comment">// Inject state into global HTML</span>
+  .replace(<span class="hljs-regexp">/&lt;!-- APP_STATE_HERE --&gt;/</span>, stateHTML)
+</code></pre>
+</section>
+
+<section id="isomorphisme-conclusion" class="slide" data-has-notes="true">
+<h2>Challenge accepted.</h2><ul>
+<li>Problème du singleton : facile</li>
+<li>Interactions : aucune</li>
+<li>Chargement des données : souvent facile</li>
+</ul>
+<h3>Ce n&#39;est pas une solution magique</h3><ul>
+<li>La construction de l&#39;état n&#39;est pas toujours trivial<ul>
+<li>C&#39;est même parfois <strong>très compliqué</strong> !</li>
+</ul>
+</li>
+<li><code>renderToString</code> est <strong>bloquante</strong> et <a href="http://jsperf.com/react-rendertostring/7"><strong>lente</strong></a><ul>
+<li>cache, PureRenderMixin…</li>
+</ul>
+</li>
+</ul>
+<p>Idée : passer <em>serverless</em> quand la charge est trop importante.</p><aside class="notes"><p>Généralement on lance le fetch dans <code>componentWillMount</code></p>
+<p><strong>Problème 1</strong> : savoir quand l&#39;application est prête à être rendue ? Idée :</p>
+<ul>
+<li>Jamais de fetch direct → action (tout dans le store)</li>
+<li>(1) Actions qui retournent une promesse (pour suivre)</li>
+<li>L&#39;idée ensuite est de collecter les &quot;fetch&quot;</li>
+<li>(2) Dispatch &quot;FETCH_ASAP&quot; + une fonction</li>
+<li>(3) Un reducer qui empile ces fonctions</li>
+<li>(4) Après le premier rendu, on dépile !</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-comment">// (1)</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> fetchContacts = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (dispatch) =&gt; (
+  promise.then(<span class="hljs-function"><span class="hljs-params">_</span> =&gt;</span> dispatch(receiveContacts(_)))
+)
+
+<span class="hljs-comment">// (2)</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fetchData</span> (<span class="hljs-params">{ getState, dispatch }</span>) </span>{
+  <span class="hljs-keyword">const</span> { <span class="hljs-attr">contacts</span>: { _loaded } } = getState()
+  <span class="hljs-keyword">if</span> (!_loaded) {
+    <span class="hljs-keyword">return</span> dispatch(fetchContacts())
+  }
+}
+<span class="hljs-keyword">this</span>.props.dispatch({ <span class="hljs-attr">type</span>: <span class="hljs-string">'FETCH_ASAP'</span>, fetch })
+
+<span class="hljs-comment">// (3)</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fetchers</span> (<span class="hljs-params">state = [], { type, fetch }</span>) </span>{
+  <span class="hljs-keyword">return</span> (type === <span class="hljs-string">'FETCH_ASAP'</span> &amp;&amp; <span class="hljs-keyword">typeof</span> fetch === <span class="hljs-string">'function'</span>)
+    ? state.concat([fetch])
+    : state
+}
+
+<span class="hljs-comment">// (4)</span>
+<span class="hljs-keyword">const</span> { fetchers } = store.getState()
+<span class="hljs-built_in">Promise</span>.all(fetchers.map(<span class="hljs-function"><span class="hljs-params">f</span> =&gt;</span> f(store))).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-comment">/* READY TO RENDER */</span>)
+</code></pre>
+<p><strong>Problème 2</strong> : savoir quand on a l&#39;arbre définitif : changement d&#39;état = ajout de composants qui eux-mêmes font du fetch = changement d&#39;état = L&#39;ENFER.</p>
+<ul>
+<li>Pas de solution, éviter cette situation</li>
+</ul>
+<p><strong>Déléguer au routeur</strong></p></aside>
+</section>
+</section>
+
+<section id="chapter-routing" class="chapter">
+<section id="routing" class="slide cover"><h1>Routing</h1></section>
+<section id="routing-intro" class="slide" data-has-notes="false">
+<h2>Pourquoi ?</h2><ul>
+<li>Pouvoir partager des URLs<ul>
+<li>On colle le <code>state</code> en hash \o/</li>
+</ul>
+</li>
+<li>Pouvoir partager des <strong>jolies</strong> URLs</li>
+</ul>
+<h2>Comment ?</h2><ul>
+<li><a href="https://github.com/rackt/react-router"><strong><code>react-router</code></strong></a> (très populaire, copain avec redux)</li>
+<li>Des alternatives :<ul>
+<li><a href="https://github.com/andreypopp/rrouter"><code>rrouter</code></a> (système de data fetching intéressant)</li>
+<li><a href="https://github.com/enaqx/awesome-react#routing">awesome-react#routing</a></li>
+<li><a href="https://github.com/facebook/react/wiki/Complementary-Tools#routing">react/Complementary-Tools#routing</a></li>
+</ul>
+</li>
+</ul>
+</section>
+
+<section id="routing-react-router" class="slide" data-has-notes="true">
+<h2><code>react-router</code></h2><pre><code class="lang-sh">npm install --save react-router <span class="hljs-built_in">history</span>
+</code></pre>
+<ul>
+<li>Routes imbriquées</li>
+<li>Redirections</li>
+<li>Routes paramétrées</li>
+<li><em>Hooks</em> (<code>onEnter</code>, <code>onLeave</code>)</li>
+<li>Configuration en JSX ou JSON</li>
+</ul>
+<p>→ <a href="https://github.com/rackt/react-router/blob/master/docs/Introduction.md">react-router/Introduction</a></p><aside class="notes"><ul>
+<li><code>react-router</code> est le module principal</li>
+<li><code>history</code> sert à manipuler l&#39;URL en barre d&#39;adresse des navigateurs et vise plus largement à manipuler la stack de navigation lors de son utilisation dans react-native.<ul>
+<li>C&#39;est une &quot;peerDependency&quot; mais elles ne sont plus installées automatiquement avec npm 3</li>
+</ul>
+</li>
+</ul></aside>
+</section>
+
+<section id="routing-simple-routes" class="slide" data-has-notes="true">
+<h2>Déclaration des routes</h2><pre><code class="lang-js"><span class="hljs-comment">// routes.js</span>
+<span class="hljs-keyword">import</span> { browserHistory } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-router'</span> <span class="hljs-comment">// singleton</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> (
+  &lt;Router history={ browserHistory }&gt;
+    &lt;Route path="/" component={ Root }&gt;
+      &lt;Route path="contacts" component={ ContactList } /&gt;
+      &lt;Route path="*" component={ NoMatch } /&gt;
+    &lt;/Route&gt;
+  &lt;/Router&gt;
+)
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// Root.js</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> (props) =&gt; (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+    { props.children }
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+)
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// app.js</span>
+render(routes, domElement)
+</code></pre>
+<p>That&#39;s all folks!</p><aside class="notes"><ul>
+<li>URLs en <code>#/contacts</code> par défaut</li>
+<li>Utiliser <code>history</code> pour passer en mode &quot;pushState&quot; (incompatible IE, dans ce cas les liens rafraichissent la page tout simplement) :<ul>
+<li><code>import createBrowserHistory from &#39;history/lib/createBrowserHistory&#39;</code></li>
+<li><code>&lt;Router history={ createBrowserHistory() }&gt;</code></li>
+</ul>
+</li>
+</ul></aside>
+</section>
+
+<section id="routing-nested-routes" class="slide" data-has-notes="false">
+<h2>Routes imbriquées</h2><pre><code class="lang-js"><span class="hljs-comment">// routes.js</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> (
+  &lt;Router&gt;
+    &lt;Route path="/" component={ Root }&gt;
+      &lt;Route path="contacts" component={ Contacts }&gt;
+        &lt;Route path="list" component={ ContactList } /&gt;
+        &lt;Route path="new" component={ ContactForm } /&gt;
+      &lt;/Route&gt;
+      &lt;Route path="*" component={ NoMatch } /&gt;
+    &lt;/Route&gt;
+  &lt;/Router&gt;
+)
+</code></pre>
+<pre><code>/               → <span class="hljs-params">&lt;Root /&gt;</span>
+/contacts       → <span class="hljs-params">&lt;Root&gt;</span><span class="hljs-params">&lt;Contacts /&gt;</span><span class="hljs-params">&lt;/Root&gt;</span>
+<span class="hljs-meta-keyword">/contacts/</span>list  → <span class="hljs-params">&lt;Root&gt;</span><span class="hljs-params">&lt;Contacts&gt;</span><span class="hljs-params">&lt;ContactList /&gt;</span><span class="hljs-params">&lt;/Contacts&gt;</span><span class="hljs-params">&lt;/Root&gt;</span>
+<span class="hljs-meta-keyword">/contacts/</span>new   → <span class="hljs-params">&lt;Root&gt;</span><span class="hljs-params">&lt;Contacts&gt;</span><span class="hljs-params">&lt;ContactForm /&gt;</span><span class="hljs-params">&lt;/Contacts&gt;</span><span class="hljs-params">&lt;/Root&gt;</span>
+</code></pre>
+</section>
+
+<section id="routing-index" class="slide" data-has-notes="false">
+<h2>Routes index et redirections</h2><pre><code class="lang-js"><span class="hljs-comment">// routes.js</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> (
+  &lt;Router&gt;
+    &lt;Route path="/" component={ Root }&gt;
+      &lt;IndexRoute component={ Home } /&gt;
+      &lt;Route path="contacts" component={ Contacts }&gt;
+        &lt;IndexRoute component={ ContactList } /&gt;
+        &lt;Redirect from="list" to="" /&gt;
+        &lt;Route path="new" component={ ContactForm } /&gt;
+      &lt;/Route&gt;
+      &lt;Route path="*" component={ NoMatch } /&gt;
+    &lt;/Route&gt;
+  &lt;/Router&gt;
+)
+</code></pre>
+<pre><code>/               → &lt;Root&gt;<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Home</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Root</span>&gt;</span></span>
+/contacts       → &lt;Root&gt;<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Contacts</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">ContactList</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Contacts</span>&gt;</span></span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">Root</span>&gt;</span></span>
+/contacts/list  → /contacts
+/contacts/<span class="hljs-keyword">new</span>   → &lt;Root&gt;<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Contacts</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">ContactForm</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Contacts</span>&gt;</span></span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">Root</span>&gt;</span></span>
+</code></pre><p><a href="https://github.com/rackt/react-router/blob/master/docs/guides/basics/IndexRoutes.md">IndexRoutes.md</a></p>
+</section>
+
+<section id="routing-link" class="slide" data-has-notes="false">
+<h2>Liens</h2><pre><code class="lang-js">location.href === <span class="hljs-string">'/contacts'</span>
+
+<span class="hljs-comment">// &lt;a href="/"&gt;Home&lt;/a&gt;</span>
+(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Link</span> <span class="hljs-attr">to</span>=<span class="hljs-string">"/"</span>&gt;</span>Home<span class="hljs-tag">&lt;/<span class="hljs-name">Link</span>&gt;</span></span>)
+
+<span class="hljs-comment">// &lt;a href="/" class="active"&gt;Home&lt;/a&gt;</span>
+(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Link</span> <span class="hljs-attr">to</span>=<span class="hljs-string">"/"</span> <span class="hljs-attr">activeClassName</span>=<span class="hljs-string">"active"</span>&gt;</span>Home<span class="hljs-tag">&lt;/<span class="hljs-name">Link</span>&gt;</span></span>)
+
+<span class="hljs-comment">// &lt;a href="/"&gt;Home&lt;/a&gt;</span>
+(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">IndexLink</span> <span class="hljs-attr">to</span>=<span class="hljs-string">"/"</span> <span class="hljs-attr">activeClassName</span>=<span class="hljs-string">"active"</span>&gt;</span>Home<span class="hljs-tag">&lt;/<span class="hljs-name">Link</span>&gt;</span></span>)
+
+<span class="hljs-comment">// &lt;a href="/contacts/new?name=Bob"&gt;New&lt;/a&gt;</span>
+(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Link</span> <span class="hljs-attr">to</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">pathname:</span> '/<span class="hljs-attr">contacts</span>/<span class="hljs-attr">new</span>', <span class="hljs-attr">query:</span> { <span class="hljs-attr">name:</span> '<span class="hljs-attr">Bob</span>' } }} <span class="hljs-attr">activeClassName</span>=<span class="hljs-string">"active"</span>&gt;</span>New<span class="hljs-tag">&lt;/<span class="hljs-name">Link</span>&gt;</span></span>)
+</code></pre>
+</section>
+
+<section id="routing-parameters" class="slide" data-has-notes="false">
+<h2>Routes paramétrées</h2><pre><code class="lang-js"><span class="hljs-comment">// routes.js</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> (
+  &lt;Router&gt;
+    &lt;Route path="/" component={ Root }&gt;
+      &lt;IndexRoute component={ Home } /&gt;
+      &lt;Route path="contacts" component={ Contacts }&gt;
+        &lt;IndexRoute component={ ContactList } /&gt;
+        &lt;Redirect from="list" to="" /&gt;
+        &lt;Route path="new" component={ ContactForm } /&gt;
+        &lt;Route path=":id" component={ ContactDetails } /&gt;
+      &lt;/Route&gt;
+      &lt;Route path="*" component={ NoMatch } /&gt;
+    &lt;/Route&gt;
+  &lt;/Router&gt;
+)
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// ContactDetails.js</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> (props) =&gt; (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Contact #{ props.params.id }<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+)
+</code></pre>
+</section>
+
+<section id="routing-hooks" class="slide" data-has-notes="false">
+<h2>Hooks</h2><pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">onEnter</span> (<span class="hljs-params">nextState, replace, callback</span>) </span>{
+  <span class="hljs-comment">// nextState.location → current location</span>
+  <span class="hljs-comment">// nextState.routes → matched routes</span>
+  <span class="hljs-comment">// nextState.params → params</span>
+  <span class="hljs-comment">// nextState.components → React rendered params</span>
+  <span class="hljs-comment">// replace({ pathname, query }) → redirects to location</span>
+  <span class="hljs-comment">// optional callback() → transition paused until called</span>
+  …
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">onLeave</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-comment">// No argument, no way to abort transition here</span>
+  <span class="hljs-comment">// Use "routerWillLeave" (cf. Lifecycle)</span>
+  …
+}
+
+&lt;Route onEnter={ onEnter } onLeave={ onLeave }
+</code></pre>
+</section>
+
+<section id="routing-advanced" class="slide" data-has-notes="false">
+<h2>Aller plus loin…</h2><p>Quelques <a href="https://github.com/rackt/react-router/blob/master/docs/guides/README.md">fonctionnalités avancées</a> :</p>
+<ul>
+<li><a href="https://github.com/rackt/react-router/blob/master/docs/guides/DynamicRouting.md"><em>dynamic rendering</em></a> avec <code>getChildRoutes</code>, <code>getIndexRoute</code>, and <code>getComponents</code> en propriétés des routes</li>
+<li><a href="https://github.com/rackt/react-router/blob/master/docs/guides/ConfirmingNavigation.md">Lifecycle : <code>routerWillLeave</code></a> pour contrôler la sortie d&#39;une URL (<em><code>onLeave</code> made useful</em>)</li>
+<li><a href="https://facebook.github.io/react/docs/animation.html">Animations de transition</a></li>
+<li><a href="https://github.com/mjackson/history#readme">Utilisation de <code>history</code></a> pour déclencher des changement de routes depuis l&#39;extérieur</li>
+</ul>
+</section>
+
+<section id="routing-react-router-redux" class="slide" data-has-notes="false">
+<h2>react-router + redux =</h2><h2><a href="https://github.com/reactjs/react-router-redux">react-router-redux</a></h2><p>Stock et gère l&#39;<em>history</em> dans un <em>reducer</em>.</p>
+<p>Impacter l&#39;URL se fait via des actions, qui sont serialisables, rejouables…</p>
+<pre><code class="lang-sh">npm install --save react-router-redux
+</code></pre>
+</section>
+
+<section id="routing-routing-reducer" class="slide" data-has-notes="false">
+<h2>routing reducer</h2><p>A la création du <code>store</code>, on combine un <code>reducer</code> dédié au routage</p>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> { routerReducer } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-router-redux'</span>
+
+<span class="hljs-keyword">const</span> store = createStore(
+  combineReducers({
+    ...reducers,
+    <span class="hljs-attr">routing</span>: routerReducer
+  })
+)
+</code></pre>
+</section>
+
+<section id="routing-routing-synchro" class="slide" data-has-notes="false">
+<h2>Synchro history &lt;&gt; store</h2><p><code>hashHistory</code> peut être préférable dans le cas d&#39;une app <em>electron</em></p>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> { browserHistory } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-router'</span>
+<span class="hljs-keyword">import</span> { syncHistoryWithStore } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-router-redux'</span>
+
+<span class="hljs-keyword">const</span> history = syncHistoryWithStore(browserHistory, store)
+</code></pre>
+<pre><code class="lang-html">ReactDOM.render(
+  <span class="hljs-tag">&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span>=<span class="hljs-string">{</span> <span class="hljs-attr">store</span> }&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Router</span> <span class="hljs-attr">history</span>=<span class="hljs-string">{</span> <span class="hljs-attr">history</span> }&gt;</span>
+      …
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Router</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">Provider</span>&gt;</span>,
+  document.getElementById('root')
+)
+</code></pre>
+</section>
+
+<section id="routing-connect-location" class="slide" data-has-notes="false">
+<h2><code>connect</code>ion</h2><p>Valeur dispo depuis <code>ownProps</code></p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> mapStateToProps = <span class="hljs-function">(<span class="hljs-params">state, { location }</span>) =&gt;</span> ({
+  <span class="hljs-attr">contactId</span>: location.query.id,
+})
+</code></pre>
+</section>
+
+<section id="routing-actions" class="slide" data-has-notes="false">
+<h2>Routing actions</h2><p>Ajouter le <code>middleware</code> à la création du <code>store</code></p>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> { browserHistory } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-router'</span>
+<span class="hljs-keyword">import</span> { routerMiddleware } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-router-redux'</span>
+
+<span class="hljs-keyword">const</span> middleware = routerMiddleware(browserHistory)
+<span class="hljs-keyword">const</span> store = createStore(
+  reducers,
+  applyMiddleware(middleware)
+)
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> { routerActions } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-router-redux'</span>
+
+<span class="hljs-keyword">this</span>.props.dispatch(routerActions.push(<span class="hljs-string">'/foo'</span>))
+</code></pre>
+<p>push, replace, go, goBack, goForward</p>
+</section>
+
+<section id="routing-server-rendering" class="slide" data-has-notes="false">
+<h2>Rendu côté serveur</h2><pre><code class="lang-js"><span class="hljs-keyword">import</span> { match, RouterContext } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-router'</span>
+
+serve(<span class="hljs-function">(<span class="hljs-params">req, res</span>) =&gt;</span> {
+  <span class="hljs-comment">// Note that req.url here should be the full URL path from</span>
+  <span class="hljs-comment">// the original request, including the query string.</span>
+  match({ routes, <span class="hljs-attr">location</span>: req.url }, (error, redirectLocation, renderProps) =&gt; {
+    <span class="hljs-keyword">if</span> (error) {
+      res.status(<span class="hljs-number">500</span>).send(error.message)
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (redirectLocation) {
+      res.redirect(<span class="hljs-number">302</span>, redirectLocation.pathname + redirectLocation.search)
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (renderProps) {
+      res.status(<span class="hljs-number">200</span>).send(renderToString(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">RouterContext</span> {<span class="hljs-attr">...renderProps</span>} /&gt;</span>))
+    } else {
+      res.status(404).send('Not found')
+    }
+  })
+})</span>
+</code></pre>
+</section>
+
+<section id="routing-server-rendering-fetch" class="slide" data-has-notes="true">
+<h2>Rendu côté serveur : data fetching</h2><p>La question de la récupération initiale des données reste entière… Le routeur nous apporte-t-il quelque-chose ?</p>
+<p>Idée : déléguer le chargement des données à la route plutôt qu&#39;au composant.</p>
+<ul>
+<li><code>onEnter</code> + <em>callback</em> pour charger les données</li>
+<li>Autre piste : <code>redux-router</code> qui émet une action <code>ROUTER_DID_CHANGE</code> + <code>getState</code> (pour fetch conditionné à l&#39;état courant) + <code>components</code> (pour savoir ce qu&#39;il faut récupérer) → <a href="https://github.com/erikras/react-redux-universal-hot-example">Exemple complet</a><ul>
+<li>Attention : installer <code>redux-router@latest</code> (cf. <a href="https://github.com/rackt/redux-router/issues/78">npm install only grabs package.json</a>)</li>
+</ul>
+</li>
+</ul><aside class="notes"><ul>
+<li>(1) <a href="https://github.com/erikras/react-redux-universal-hot-example/blob/master/src/containers/App/App.js#L14-L25">Chaque composant (racine de route) décrit sa méthode <code>fetchData</code></a></li>
+<li>(2) <a href="https://github.com/erikras/react-redux-universal-hot-example/blob/master/src/redux/middleware/transitionMiddleware.js#L6-L17">On intercepte les actions ROUTER_DIR_CHANGE (ex. middleware)</a></li>
+<li>(3) <a href="https://github.com/erikras/react-redux-universal-hot-example/blob/master/src/helpers/getDataDependencies.js">On appelle une fonction de récupération groupée des données</a></li>
+<li>(4) <a href="https://github.com/erikras/react-redux-universal-hot-example/blob/master/src/redux/middleware/transitionMiddleware.js#L38">On ouvre un moyen de se brancher sur le résultat du chargement</a></li>
+<li>(5) <a href="https://github.com/erikras/react-redux-universal-hot-example/blob/master/src/server.js#L93">pour l&#39;écouter côté serveur et attendre pour le rendu</a></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-comment">// (1)</span>
+{
+  fetchData(getState, dispatch) {
+    <span class="hljs-keyword">if</span> (!getState().contacts._loaded) {
+      <span class="hljs-keyword">return</span> dispatch(fetchContacts())
+    }
+  }
+}
+
+<span class="hljs-comment">// (2)</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fetchDataMiddleware</span> (<span class="hljs-params">{getState, dispatch}</span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">next</span> =&gt;</span> action =&gt; {
+    <span class="hljs-keyword">if</span> (action.type === ROUTER_DID_CHANGE) {
+      next(action)
+      <span class="hljs-keyword">const</span> fetchP = <span class="hljs-built_in">Promise</span>.all(getDataDependencies(components, getState, dispatch, …))
+      <span class="hljs-comment">// (4)</span>
+      getState().fetchP = fetchP
+      <span class="hljs-keyword">return</span> fetchP
+    } <span class="hljs-keyword">else</span> {
+      next(action)
+    }
+  }
+}
+
+<span class="hljs-comment">// (3)</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getDataDependencies</span> (<span class="hljs-params">components, getState, dispatch, …</span>) </span>{
+  <span class="hljs-keyword">const</span> callables = _.filter(components, <span class="hljs-string">'fetchData'</span>)
+  <span class="hljs-keyword">return</span> _.invoke(callables, <span class="hljs-string">'fetchData'</span>, getState, dispatch, …)
+};
+
+<span class="hljs-comment">// (5)</span>
+<span class="hljs-keyword">import</span> { ReduxRouter } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux-router'</span>;
+<span class="hljs-keyword">import</span> { match } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux-router/server'</span>;
+store.dispatch(match(req.originalUrl, (error, redirectLocation, routerState) =&gt; {
+  store.getState().fetchP.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">const</span> component = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span>=<span class="hljs-string">{store}</span> <span class="hljs-attr">key</span>=<span class="hljs-string">"provider"</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">ReduxRouter</span>/&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Provider</span>&gt;</span></span>;
+    …
+  })
+}))
+</code></pre></aside>
+</section>
+
+<section id="routing-conclusion" class="slide" data-has-notes="false">
+<h2>Conclusion</h2><ul>
+<li>Une solution de routing complète et adaptable</li>
+<li>Pas encore de solution idéale pour le <em>data-fetching</em><ul>
+<li>Mais on a de plus en plus d&#39;outils</li>
+<li>C&#39;est une problématique &quot;chaude&quot; (cf. <code>async-props</code>)</li>
+</ul>
+</li>
+<li>L&#39;API a énormément changé jusqu&#39;à la 1.0<ul>
+<li>S&#39;attendre à une 2.0 velue</li>
+</ul>
+</li>
+<li>Pas une obligation, des alternatives…</li>
+</ul>
+</section>
+</section>
+
+<section id="chapter-legacy" class="chapter">
+<section id="legacy" class="slide cover"><h1>Legacy</h1></section>
+<section id="legacy-intro" class="slide" data-has-notes="false">
+<h2>Intégrer React dans une &quot;vieille&quot; application</h2><h3>Facile : parties indépendantes de la page</h3><ul>
+<li>Remplacer composant par composant</li>
+<li>Possibilité de dialoguer via le dispatcher</li>
+</ul>
+<h3>Moins facile : modifier le DOM</h3><ul>
+<li>Code qui risque de remplacer l&#39;élément parent</li>
+<li>Code qui va modifier le DOM interne à l&#39;élément</li>
+<li>Des solutions ?</li>
+</ul>
+</section>
+
+<section id="legacy-dom-parent" class="slide" data-has-notes="false">
+<h2>Modification du DOM &quot;parent&quot;</h2><p>Exemple : <a href="http://winterbe.com/posts/2015/08/24/integrate-reactjs-into-jquery-webapps/">routing ajax old school</a></p>
+<h3>Le problème</h3><ul>
+<li>React va garder une référence à son composant même si le DOM a disparu.</li>
+<li>En cas de rappel à <code>render()</code> → comportement erratique</li>
+<li>Fuites mémoire</li>
+</ul>
+<h3>La solution</h3><p>La clé : <code>react-dom</code>.<code>unmountComponentAtNode</code> pour démonter un composant</p>
+</section>
+
+<section id="legacy-dom-interne" class="slide" data-has-notes="true">
+<h2>Interaction avec le DOM du composant</h2><h3>En lecture seule (ex. canvas)</h3><p>On a besoin d&#39;accéder au DOM mais on ne modifie pas l&#39;arbre. La clé : <code>react-dom</code>.<code>findDOMNode</code></p>
+<pre><code class="lang-js">componentDidMount () {
+  <span class="hljs-keyword">const</span> context = findDOMNode(<span class="hljs-keyword">this</span>).getContext(<span class="hljs-string">'2d'</span>)
+  paint(context, <span class="hljs-keyword">this</span>.props.rotation)
+}
+</code></pre>
+<pre><code class="lang-js">componentDidUpdate () {
+  <span class="hljs-keyword">const</span> context = findDOMNode(<span class="hljs-keyword">this</span>).getContext(<span class="hljs-string">'2d'</span>)
+  context.clearRect(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">200</span>, <span class="hljs-number">200</span>)
+  paint(context, <span class="hljs-keyword">this</span>.props.rotation)
+}
+</code></pre>
+<pre><code class="lang-js">render () {
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">canvas</span> <span class="hljs-attr">width</span>=<span class="hljs-string">{200}</span> <span class="hljs-attr">height</span>=<span class="hljs-string">{200}</span> /&gt;</span>
+}</span>
+</code></pre><aside class="notes"><ul>
+<li><code>componentDidMount</code> pour accéder au DOM dès que disponible</li>
+<li><code>componentDidUpdate</code> pour réagir aux modification d&#39;état/propriété<ul>
+<li>L&#39;élément DOM sera généralement la même instance, mais <strong>ce n&#39;est pas garanti</strong></li>
+<li>Attention aux data-attributes par exemple → <code>WeakMap</code> peut être une bonne alternative</li>
+</ul>
+</li>
+</ul></aside>
+</section>
+
+<section id="legacy-dom-modif" class="slide" data-has-notes="false">
+<h2>Interaction avec le DOM du composant</h2><h3>Idéalement, ne pas modifier le DOM hors de React</h3><ul>
+<li>Écouter les événements externes, modifier l&#39;état ou les propriétés en réaction</li>
+<li>Exemple : <a href="http://webcloud.se/sortable-list-component-react-js/">React + HTML5 Drag &amp; Drop API</a></li>
+</ul>
+<h3>Quand ce n&#39;est pas possible</h3><ul>
+<li>Maintenir manuellement la cohésion React/DOM</li>
+<li>Exemple : <a href="https://gist.github.com/petehunt/7882164">React + jQuery UI sortable</a></li>
+<li>Probablement plus &quot;cher&quot; qu&#39;une réécriture</li>
+</ul>
+</section>
+</section>
+
+<section id="chapter-context" class="chapter">
+<section id="context" class="slide cover"><h1>Context</h1></section>
+<section id="context-intro" class="slide" data-has-notes="false">
+<h2>Passer une donnée le long de l&#39;arbre</h2><p>Les composants intermédiaires jouent les passe-plat</p>
+<pre><code class="lang-js"><span class="hljs-comment">// App defines btnColor</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span> (<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">return</span> &lt;MessageList color={ color } /&gt;;
+}
+
+// MessageList just passes it along the way
+function MessageList ({ color }) {
+  return &lt;div&gt;
+    &lt;Message text={ 'hello' } color={ color } /&gt;
+    &lt;Message text={ 'world' } color={ color } /&gt;
+  &lt;/div&gt;;
+}
+
+// Message uses it
+function Message ({ text, color }) {
+  return &lt;span style={ { color } }&gt;{ text }&lt;/span&gt;;
+}
+</code></pre>
+<p><a href="http://facebook.github.io/react/docs/context.html"><code>context</code></a> pour effectuer ce passage de manière transparente</p>
+</section>
+
+<section id="context-context-parent" class="slide" data-has-notes="false">
+<h2>Context : le parent</h2><ul>
+<li><code>childContextTypes</code> définit le format du context</li>
+<li><code>getChildContext()</code> définit sa valeur</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+
+  getChildContext () {
+    <span class="hljs-keyword">return</span> { <span class="hljs-attr">color</span>: <span class="hljs-string">'blue'</span> };
+  }
+
+  render () {
+    <span class="hljs-comment">// Plus besoin de passe-plat</span>
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MessageList</span> /&gt;</span>;
+  }
+}
+
+App.childContextTypes = { color: React.PropTypes.string }</span>
+</code></pre>
+<p>Un composant <em>stateless</em> ne peut définir un contexte</p>
+</section>
+
+<section id="context-context-child" class="slide" data-has-notes="false">
+<h2>Context : les enfants</h2><ul>
+<li><code>contextTypes</code> définit le contexte qu&#39;on veut recevoir</li>
+<li><code>this.context</code> est alors défini<ul>
+<li>ou passé en second paramètre des composants <em>stateless</em></li>
+</ul>
+</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Message</span> (<span class="hljs-params">props, context</span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{</span> { <span class="hljs-attr">color:</span> <span class="hljs-attr">context.color</span> } }&gt;</span>{ props.text }<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>;
+}
+
+Message.contextTypes = { <span class="hljs-attr">color</span>: React.PropTypes.string };
+</code></pre>
+<p>Les composants intermédiaires sont simplifiés</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">MessageList</span> (<span class="hljs-params">{ color }</span>) </span>{
+  <span class="hljs-keyword">return</span> &lt;div&gt;
+    &lt;Message text={ 'hello' } /&gt;
+    &lt;Message text={ 'world' } /&gt;
+  &lt;/div&gt;;
+}
+</code></pre>
+</section>
+
+<section id="context-pros-cons" class="slide" data-has-notes="false">
+<h2>Pour ou contre ?</h2><ul>
+<li>Composants intermédiaires largement simplifiés</li>
+<li>Déclaration explicite du contexte</li>
+<li>Mais plus difficile à suivre, attention à la maintenance</li>
+</ul>
+<h2>Faire / Ne pas faire</h2><ul>
+<li>Idéal pour passer ce que vous auriez sinon eu envie de stocker en globale (utilisateur courant, thème, langue…)</li>
+<li>Pas du tout adapté pour passer des données métier (utiliser <a href="#/flux">Flux</a> ou <a href="#/graphql-et-relay">Relay</a>)</li>
+</ul>
+</section>
+
+<section id="context-new-api" class="slide" data-has-notes="false">
+<h1>Provider / Consumer</h1><pre><code class="lang-js">type Provider&lt;T&gt; = React.Component&lt;{
+  <span class="hljs-attr">value</span>: T,
+  children?: React.Node,
+}&gt;
+
+type Consumer&lt;T&gt; = React.Component&lt;{
+  <span class="hljs-attr">children</span>: <span class="hljs-function">(<span class="hljs-params">value: T</span>) =&gt;</span> React.Node,
+}&gt;
+
+type Context&lt;T&gt; = {
+  <span class="hljs-attr">Provider</span>: Provider&lt;T&gt;,
+  <span class="hljs-attr">Consumer</span>: Consumer&lt;T&gt;,
+}
+
+interface React {
+  createContext&lt;T&gt;(defaultValue: T): Context&lt;T&gt;
+}
+</code></pre>
+<p><a href="https://github.com/reactjs/rfcs/blob/master/text/0002-new-version-of-context.md">RFC for React 16.3</a></p>
+</section>
+</section>
+
+<section id="chapter-graphql-et-relay" class="chapter">
+<section id="graphql-et-relay" class="slide cover"><h1>GraphQL et Relay</h1></section>
+<section id="graphql-et-relay-intro" class="slide" data-has-notes="false">
+<h2>Pourquoi GraphQL et Relay ?</h2><ul>
+<li>Chaque composant définit son propre arbre de données</li>
+<li>Mais si chaque composant fait ses requêtes Ajax ?<ul>
+<li>→ game over</li>
+</ul>
+</li>
+<li>Du coup on doit centraliser les requêtes</li>
+<li>Et donc centraliser la définition de l&#39;état global</li>
+<li>C&#39;est souvent compliqué…</li>
+</ul>
+<h3>Here comes a new challenger</h3><ul>
+<li>Chaque composant déclare ses requêtes adaptées</li>
+<li>Le framework se débrouille pour dispatcher tout ça</li>
+</ul>
+</section>
+
+<section id="graphql-et-relay-graphql" class="slide" data-has-notes="false">
+<h2>GraphQL</h2><p><a href="https://facebook.github.io/relay/docs/thinking-in-graphql.html">Thinking in GraphQL</a></p>
+<ul>
+<li>Un langage de requête</li>
+<li>Un protocole (implémentation serveur)</li>
+</ul>
+<pre><code class="lang-js">graphql.get(<span class="hljs-string">`query {
+  users {
+    email,
+    picture { href }
+  }
+}`</span>)
+.then(<span class="hljs-function"><span class="hljs-params">users</span> =&gt;</span> {
+  <span class="hljs-comment">// partial users list</span>
+  <span class="hljs-comment">// [ { email: "…", picture: { href: "…" } } ]</span>
+  <span class="hljs-built_in">console</span>.log(users)
+})
+</code></pre>
+</section>
+
+<section id="graphql-et-relay-graphql-server" class="slide" data-has-notes="false">
+<h2>GraphQL : côté serveur</h2><ul>
+<li>Définition du schéma avec <a href="https://github.com/graphql/graphql-js"><code>graphql-js</code></a><ul>
+<li>Implémente aussi les fonctions de résolution des éléments du graphe</li>
+</ul>
+</li>
+<li>Intégration dans Express avec <a href="https://github.com/graphql/express-graphql"><code>express-graphql</code></a></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> schema = <span class="hljs-keyword">new</span> GraphQLSchema({
+  …
+})
+
+app.use(<span class="hljs-string">'/graphql'</span>, graphqlHTTP({
+  schema,
+  <span class="hljs-attr">graphiql</span>: <span class="hljs-literal">true</span>
+}))
+</code></pre>
+<ul>
+<li><a href="https://github.com/graphql/graphiql"><code>graphiql</code></a> est un explorateur GraphQL dans le navigateur</li>
+</ul>
+</section>
+
+<section id="graphql-et-relay-relay-container" class="slide" data-has-notes="true">
+<h2>Relay</h2><p><em>Higher Order Component</em> :</p>
+<pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  render () {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>{ this.props.user.name } ({ this.props.user.email })<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>;
+  }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> Relay.createContainer(User, {
+  <span class="hljs-attr">fragments</span>: {
+    <span class="hljs-attr">user</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> Relay.QL<span class="hljs-string">`fragment on User { email }`</span>
+  }
+})
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// Render a specific user component</span>
+ReactDOM.render(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">RelayRootContainer</span> <span class="hljs-attr">Component</span>=<span class="hljs-string">{</span> <span class="hljs-attr">User</span> } <span class="hljs-attr">route</span>=<span class="hljs-string">{</span>
+  <span class="hljs-attr">queries:</span> {
+    <span class="hljs-attr">user:</span> () =&gt;</span> Relay.QL`query { node(id: "123") }`
+  }
+} /&gt;, domElement)</span>
+</code></pre><aside class="notes"><ul>
+<li>Le composant retourné par <code>Relay.createContainer</code> décrit de quel &quot;fragments&quot; de la donnée il a besoin pour son rendu</li>
+<li>La donnée requêtée spécifiquement sera définie par un <code>RelayRootContainer</code></li>
+</ul></aside>
+</section>
+
+<section id="graphql-et-relay-relay-overlap" class="slide" data-has-notes="false">
+<h2>Relay</h2><ul>
+<li>De nombreuses requêtes vont avoir des fragments en commun</li>
+<li><code>Relay</code> va factoriser tout ça…</li>
+<li>…produire une seule requête finale…</li>
+<li>…et dispatcher les fragments aux composants</li>
+</ul>
+</section>
+
+<section id="graphql-et-relay-conclusion" class="slide" data-has-notes="false">
+<h2>Conclusion</h2><ul>
+<li>Pour démêler tout ça : <a href="https://www.quora.com/How-do-React-Flux-GraphQL-and-Relay-work-together">How do React, Flux, GraphQL, and Relay work together</a></li>
+<li>Définissez votre besoin avant de plonger</li>
+</ul>
+<h3>Alternatives</h3><ul>
+<li><a href="http://netflix.github.io/falcor/">Falcor</a> (Netflix)<ul>
+<li><a href="http://jsongraphformat.info/"><code>JSON Graph</code></a> est une spec indépendante</li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+
+<section id="chapter-helpers" class="chapter">
+<section id="helpers" class="slide cover"><h1>Helpers</h1></section>
+<section id="helpers-boilerplate" class="slide" data-has-notes="false">
+<h1>Boilerplate</h1><p>L&#39;expressivité de React et du paradigme Flux / Redux a pour conséquence désagréable d&#39;introduire nombre de répétitions.</p>
+<p>Les fonctions suivantes nous permettent de retrouver un code + DRY</p>
+</section>
+
+<section id="helpers-classnames" class="slide" data-has-notes="false">
+<h2>classNames</h2><pre><code class="lang-sh">npm install --save classnames
+</code></pre>
+<p>Pas de DOM, pas de <a href="https://developer.mozilla.org/en/docs/Web/API/Element/classList"><code>classList</code></a>, donc</p>
+<pre><code class="lang-js">classNames(<span class="hljs-string">'foo'</span>, <span class="hljs-string">'bar'</span>); <span class="hljs-comment">// =&gt; 'foo bar'</span>
+classNames(<span class="hljs-string">'foo'</span>, { <span class="hljs-attr">bar</span>: <span class="hljs-literal">true</span> }); <span class="hljs-comment">// =&gt; 'foo bar'</span>
+classNames({ <span class="hljs-string">'foo-bar'</span>: <span class="hljs-literal">true</span> }); <span class="hljs-comment">// =&gt; 'foo-bar'</span>
+classNames({ <span class="hljs-attr">foo</span>: <span class="hljs-literal">true</span> }, { <span class="hljs-attr">bar</span>: <span class="hljs-literal">true</span> }); <span class="hljs-comment">// =&gt; 'foo bar'</span>
+classNames({ <span class="hljs-attr">foo</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">bar</span>: <span class="hljs-literal">true</span> }); <span class="hljs-comment">// =&gt; 'foo bar'</span>
+
+<span class="hljs-comment">// lots of arguments of various types</span>
+classNames(<span class="hljs-string">'foo'</span>, { <span class="hljs-attr">bar</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">duck</span>: <span class="hljs-literal">false</span> }, <span class="hljs-string">'baz'</span>, { <span class="hljs-attr">quux</span>: <span class="hljs-literal">true</span> }) <span class="hljs-comment">// =&gt; 'foo bar baz quux'</span>
+
+<span class="hljs-comment">// other falsy values are just ignored</span>
+classNames(<span class="hljs-literal">null</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">'bar'</span>, <span class="hljs-literal">undefined</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, { <span class="hljs-attr">baz</span>: <span class="hljs-literal">null</span> }, <span class="hljs-string">''</span>); <span class="hljs-comment">// =&gt; 'bar 1'</span>
+</code></pre>
+</section>
+
+<section id="helpers-createconstants" class="slide" data-has-notes="false">
+<h2>createConstants</h2><pre><code class="lang-js"><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createConstants</span> (<span class="hljs-params">...constants</span>) </span>{
+  <span class="hljs-keyword">return</span> constants.reduce(<span class="hljs-function">(<span class="hljs-params">acc, constant</span>) =&gt;</span> {
+    acc[constant] = constant;
+    <span class="hljs-keyword">return</span> acc;
+  }, {});
+}
+</code></pre>
+<p>Avant</p>
+<pre><code class="lang-js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> {
+  <span class="hljs-string">'CHANGE_NAME'</span>: <span class="hljs-string">'CHANGE_NAME'</span>,
+  <span class="hljs-string">'ADD_USER'</span>: <span class="hljs-string">'ADD_USER'</span>
+}
+</code></pre>
+<p>Après</p>
+<pre><code class="lang-js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> createConstants(
+  <span class="hljs-string">'CHANGE_NAME'</span>,
+  <span class="hljs-string">'ADD_USER'</span>
+);
+</code></pre>
+</section>
+
+<section id="helpers-createreducer" class="slide" data-has-notes="false">
+<h2>createReducer</h2><pre><code class="lang-js"><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createReducer</span> (<span class="hljs-params">initialState, fnMap</span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">state = initialState, { type, payload, meta, error }</span>) =&gt;</span> {
+    <span class="hljs-keyword">const</span> handler = fnMap[type];
+    <span class="hljs-keyword">return</span> handler ? handler(state, payload, meta, error) : state;
+  };
+}
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// Avant</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> (state = initialState, action) =&gt; {
+  <span class="hljs-keyword">switch</span> (action.type) {
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'CHANGE_NAME'</span>: <span class="hljs-keyword">return</span> …
+    <span class="hljs-keyword">default</span>: <span class="hljs-keyword">return</span> state
+  }
+}
+
+<span class="hljs-comment">// Après</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> createReducer(initialState, {
+  <span class="hljs-attr">CHANGE_NAME</span>: <span class="hljs-function">(<span class="hljs-params">state, payload</span>) =&gt;</span> { ... }
+});
+</code></pre>
+<p>Voir <a href="https://github.com/acdlite/flux-standard-action">Flux Standard Action</a></p>
+</section>
+
+<section id="helpers-createaction" class="slide" data-has-notes="false">
+<h2>createAction</h2><p>Module <a href="https://github.com/acdlite/redux-actions"><code>redux-actions</code></a></p>
+<p>Force la convention Flux Standard Action</p>
+<pre><code class="lang-sh">npm install --save redux-actions
+</code></pre>
+<pre><code class="lang-js">changeName = createAction(<span class="hljs-string">'CHANGE_NAME'</span>);
+
+expect(changeName(<span class="hljs-string">'Lilian'</span>)).to.deep.equal({
+  <span class="hljs-attr">type</span>: <span class="hljs-string">'CHANGE_NAME'</span>,
+  <span class="hljs-attr">payload</span>: <span class="hljs-string">'Lilian'</span>
+});
+</code></pre>
+<p>En réalité <code>createAction</code> retourne un <em>action creator</em></p>
+</section>
+</section>
+
+<section id="perfs" class="slide" data-has-notes="false">
+<h1>Performances</h1><ul>
+<li>Mesurer : <a href="https://facebook.github.io/react/docs/perf.html">React Performance Tools</a></li>
+</ul>
+<h3>Côté serveur : accélérer le rendu initial</h3><ul>
+<li>Limiter la taille de l&#39;arbre</li>
+<li>Mettre en place un <em>pool</em> de <em>renderers</em></li>
+</ul>
+<h3>Côté client : limiter les calculs</h3><ul>
+<li>Mémoisation de <code>mapStateToProps</code></li>
+<li><code>shouldComponentUpdate</code></li>
+<li><code>PureComponent</code></li>
+<li>Solution simple : <a href="https://github.com/gaearon/react-pure-render"><code>react-pure-render</code></a><ul>
+<li>Idée : <a href="https://github.com/facebook/immutable-js"><code>immutable</code></a>.<code>equals</code></li>
+</ul>
+</li>
+</ul>
+</section>
+
+<section id="goodbye" class="slide" data-state="end" data-has-notes="false">
+<h2>À bientôt !</h2><p>@naholyr | @Delapouite</p>
+<p>P.S: <a href="https://github.com/enaqx/awesome-react">awesome-react</a></p>
+</section></div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+    // Full list of configuration options available at:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+      controls: true,
+      progress: true,
+      history: true,
+      center: true,
+
+      transition: Reveal.getQueryHash().transition || 'slide', // none/fade/slide/convex/concave/zoom
+
+      // Optional reveal.js plugins
+      dependencies: [
+        //{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+        //{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+        //{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+        { src: 'plugin/zoom-js/zoom.js', async: true },
+        { src: 'plugin/notes/notes.js', async: true }
+      ]
+    });
+    </script>
+
+    <script src="js/dynamic-theme.js"></script><script src="js/such-notes-print.js"></script><script src="js/config.js"></script>
+
+  </body>
+</html>

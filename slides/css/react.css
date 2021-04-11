@@ -1,0 +1,103 @@
+@media print {
+  .print-warning {
+    display: none;
+  }
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  text-transform: none;
+}
+
+.reveal code {
+  background: rgba(200, 200, 200, 0.3);
+  font-family: monospace;
+}
+
+.reveal pre {
+  border: 1px solid #ccc;
+}
+.reveal pre code {
+  background: white;
+  color: black;
+}
+
+.reveal pre.stretch {
+  width: 80% !important;
+  left: 50% !important;
+  margin-left: -40% !important;
+  font-size: 0.9em;
+}
+
+.reveal .raw img,
+.reveal img.raw {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.screen {
+  display: initial;
+}
+.print {
+  display: none;
+}
+
+.print-pdf .reveal .cleartext * {
+  color: black;
+}
+.print-pdf .reveal .cleartext a {
+  color: #333366;
+}
+.print-pdf .screen {
+  display: none;
+}
+.print-pdf .print {
+  display: initial;
+}
+
+
+/* fix margins of lists followed by title */
+.reveal ul+h1, .reveal ul+h2, .reveal ul+h3, .reveal ul+h4, .reveal ul+h5, .reveal ul+h6,
+.reveal ol+h1, .reveal ol+h2, .reveal ol+h3, .reveal ol+h4, .reveal ol+h5, .reveal ol+h6 {
+  margin-top: 20px;
+}
+
+
+
+html.intro body:not(.print-pdf),
+body.print-pdf section#intro {
+  background-image: url(../images/logos/react.png);
+  background-repeat: no-repeat;
+  background-position: center 50%;
+  background-color: #222222;
+  background-size: contain;
+}
+html.intro body:not(.print-pdf) *,
+body.print-pdf section#intro * {
+  color: white;
+}
+html.intro body:not(.print-pdf) * a {
+  color: #ccccff;
+}
+html.intro body:not(.print-pdf) section h1 {
+  text-align: right;
+}
+
+html.end body:not(.print-pdf),
+body.print-pdf section#goodbye {
+  background-image: url(../images/logos/byte-club.png);
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 80vh;
+}
+body.print-pdf section#goodbye {
+  background-size: 300px;
+}
+body.print-pdf section img {
+  max-height: 300px;
+}
