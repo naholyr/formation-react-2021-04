@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf8">
+  <title>Motux</title>
+  <link rel="stylesheet" href="motux.css" />
+</head>
+<body>
+  <h1>Motux</h1>
+
+  <form id="login" style="display:none">
+    <input name="username" placeholder="Your name">
+    <button>Log in</button>
+  </form>
+
+  <script type="text/html" id="tpl-score">
+    <li class="<%= isMyself ? 'myself' : '' %>">
+      <strong class="player"><%= userName %></strong>
+      <em class="score"><%= score %> pts</em>
+    </li>
+  </script>
+
+  <script type="text/html" id="tpl-trial">
+    <li class="<%= isMyself ? 'myself' : '' %>">
+      <strong><%= userName %></strong>
+      <% letters.forEach(({ letter, status }) => { %>
+        <span class="<%= status %>"><%= letter %></span>
+      <% }) %>
+    </li>
+  </script>
+
+  <div id="game" style="display:none">
+    <ul id="scores">
+    </ul>
+    <div id="guess">
+      <ul id="trials">
+      </ul>
+      <form id="word">
+        <input type="text" name="word" pattern="[^-_ '&quot;]+" required minlength="5" maxlength="10">
+      </form>
+    </div>
+  </div>
+
+  <script crossorigin src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  <script src="motux.js"></script>
+</body>

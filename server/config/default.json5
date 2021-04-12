@@ -1,0 +1,14 @@
+{
+  port: 3100,
+  cluster: {
+    count: 4,
+  },
+  redis: {
+    host: "localhost",
+    port: 6379,
+    db: 0,
+  },
+  jwtSecret: '98AYZNYHLDQIHO×æâüœîäDJ09OIHLNUIHazpieouazpkù&é"opiàçqsd_mqskdjùa)à"_ç&_èé"è&é_"uho',
+  delayBetweenWords: 5000,
+  delayBetweenGames: 10000,
+}
