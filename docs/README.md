@@ -7,6 +7,7 @@ Formateur : Nicolas Chambrier <nicolas@chambrier.fr> @naholyr
 ### Liens utiles
 
 - Diagramme du cycle de vie des composants : http://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/
+  - Version Hooks : https://wavez.github.io/react-hooks-lifecycle/
 - Ulimit & watch : https://www.imakewebsites.ca/posts/2018/03/06/node.js-too-many-open-files-and-ulimit/
 - Qui est this ? https://github.com/byteclubfr/site/blob/readable-in-github/src/blog/this.md
 - Features ES6 : http://es6-features.org/#ObjectMatchingShorthandNotation
@@ -30,7 +31,6 @@ Formateur : Nicolas Chambrier <nicolas@chambrier.fr> @naholyr
 - “Hot reloading with create-react-app without ejecting” : https://medium.com/@brianhan/hot-reloading-cra-without-eject-b54af352c642
 - “Portable console emulator for Windows” : https://cmder.net/
 - “Execution in the kindom of nouns” : https://steve-yegge.blogspot.com/2006/03/execution-in-kingdom-of-nouns.html
-- “React Lifecycle Methods Diagram” : http://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/
 - “Understanding Redux Middleware And Writing Custom Ones” : https://designingforscale.com/understanding-redux-middleware-and-writing-custom-ones/
 
 ## Protips / bons réflexes

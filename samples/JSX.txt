@@ -1,0 +1,18 @@
+
+<Toto />                                   React.createElement(Toto)
+
+<h1>coucou</h1>                            React.createElement("h1", {}, "coucou")
+
+<input                                     React.createElement("input", {
+  type="text"                                 type: "text",
+  value={variable}                            value: variable,
+  disabled={false}                            disabled: false,
+/>                                         })
+
+<ul>                                       React.createElement("ul", {},
+  <li>un</li>                                 React.createElement("li", {}, "un"),
+  <li>{"deux"}</li>                           React.createElement("li", {}, "deux"),
+</ul>                                      )
+
+// Espaces entre les tags = supprimés
+<strong>coucou</strong>{" "}<span>gamin</span>
