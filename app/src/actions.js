@@ -1,14 +1,11 @@
-// Action creator
-export const changeNbCounters = (nb) => {
+export const setUser = (name) => {
   return {
-    type: "CHANGE_NB_COUNTERS",
-    payload: { nb },
+    type: "SET_USER",
+    payload: { name },
   };
 };
 
-export const resetNbCounters = () => {
-  return {
-    type: "CHANGE_NB_COUNTERS",
-    payload: { nb: 0 },
-  };
-};
+export const unsetUser = () => ({
+  type: "SET_USER",
+  payload: { name: null },
+});

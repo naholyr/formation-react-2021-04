@@ -1,6 +1,8 @@
+import { combineReducers, createStore } from "redux";
+
 export const initialState = {
   user: {
-    name: "Nicolas",
+    name: null,
   },
   game: {
     trials: [
@@ -98,4 +100,32 @@ export const initialState = {
     wordLength: 10,
     inputDisabled: false,
   },
+};
+
+export const userReducer = (state = initialState.user, action) => {
+  switch (action.type) {
+    case "SET_USER":
+      return { ...state, name: action.payload.name };
+    default:
+      return state;
+  }
+};
+
+export const gameReducer = (state = initialState.game, action) => {
+  switch (action.type) {
+    default:
+      return state;
+  }
+};
+
+export const reducer = combineReducers({
+  user: userReducer,
+  game: gameReducer,
+});
+
+export const initStore = () => {
+  return createStore(
+    reducer,
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  );
 };

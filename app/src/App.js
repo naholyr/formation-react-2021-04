@@ -1,25 +1,19 @@
-import { /* lazy, */ useState } from "react";
+// import { lazy } from "react";
 import "./App.css";
 import { LoginForm } from "./LoginForm/LoginForm";
 import { Game } from "./Game/Game";
+import { useSelector } from "react-redux";
 // const Game = lazy(() =>
 //   import("./Game/Game").then((m) => ({ default: m.Game }))
 // );
 
 function App() {
-  const [authenticated, setAuthenticated] = useState(true);
+  // useSelector(selector : state => any)
+  // - store.subscribe => à chaque update du store, on refait la sélection
+  // - "faire la sélection" = selector(state actuel du store) => valeur retournée par le hook
+  const authenticated = useSelector((state) => state.user.name !== null);
 
-  const onSubmitLoginForm = (e) => {
-    e.preventDefault();
-    console.log(e.target.username.value);
-    setAuthenticated(true);
-  };
-
-  const content = authenticated ? (
-    <Game />
-  ) : (
-    <LoginForm onSubmit={onSubmitLoginForm} />
-  );
+  const content = authenticated ? <Game /> : <LoginForm />;
 
   return (
     <>

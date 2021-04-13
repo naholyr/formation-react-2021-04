@@ -4,7 +4,7 @@ import "./WordForm.css";
 export const WordForm = () => {
   const wordLength = initialState.game.wordLength;
 
-  const style = { width: `${wordLength * 2}rem` };
+  const inputStyle = { width: `${wordLength * 2}rem` };
 
   return (
     <form className="WordForm">
@@ -17,7 +17,7 @@ export const WordForm = () => {
         minLength={wordLength}
         maxLength={wordLength}
         placeholder={`${wordLength} lettres`}
-        style={style}
+        style={inputStyle}
       />
     </form>
   );
