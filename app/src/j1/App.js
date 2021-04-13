@@ -9,6 +9,7 @@ const INITIAL_COUNT = 2;
 function App() {
   const [counterListKey, setCounterListKey] = useState(1);
   // const [nbCount, setNbCount] = useState(INITIAL_COUNT);
+  /*
   const [nbCount, setNb] = useState(
     window.store.getState().counters.nbCounters
   );
@@ -20,6 +21,8 @@ function App() {
       unsubscribe();
     };
   }, []);
+  */
+  const nbCount = useSelector((appState) => appState.counters.nbCounters);
 
   useEffect(() => {
     console.log("App", { nbCount, counterListKey });
