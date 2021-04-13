@@ -1,0 +1,42 @@
+.GuessList {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  padding: 0;
+  margin: auto;
+  margin-bottom: 1rem;
+}
+.GuessList li {
+  display: block;
+  clear: both;
+  margin: 0;
+  padding: 0;
+}
+.GuessList li strong {
+  display: block;
+  float: left;
+  margin: 0;
+  padding: 0.5rem;
+  width: 200px;
+  text-align: right;
+}
+.GuessList li span {
+  text-transform: uppercase;
+  display: block;
+  float: left;
+  width: 1rem;
+  height: 1rem;
+  text-align: center;
+  margin: 2px;
+  padding: 0.5rem;
+}
+
+.GuessList li span.correct {
+  background: tomato;
+}
+.GuessList li span.incorrect {
+  background: cornflowerblue;
+}
+.GuessList li span.misplaced {
+  background: palegoldenrod;
+}

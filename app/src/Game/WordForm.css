@@ -1,0 +1,13 @@
+.WordForm {
+  display: block;
+  width: 800px;
+  margin: auto;
+  padding: 0;
+}
+.WordForm input {
+  font-size: 2rem;
+  padding: 0.5rem;
+  margin: 0 0 0 calc(200px + 1rem);
+  text-transform: uppercase;
+  text-align: center;
+}

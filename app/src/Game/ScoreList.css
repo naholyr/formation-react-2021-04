@@ -1,0 +1,7 @@
+.ScoreList {
+  float: left;
+}
+
+.ScoreList .myself {
+  font-size: larger;
+}
