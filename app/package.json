@@ -30,7 +30,7 @@
   "browserslist": {
     "production": [
       ">0.2%",
-      "not ie",
+      "not ie > 0",
       "not dead",
       "not op_mini all"
     ],
