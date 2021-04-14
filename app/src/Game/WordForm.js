@@ -25,9 +25,9 @@ export const WordForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    tryWord(e.target.word.value);
-    e.target.word.value = "";
-    e.target.word.focus();
+    tryWord(inputRef.current.value);
+    inputRef.current.value = "";
+    inputRef.current.focus();
   };
 
   return (

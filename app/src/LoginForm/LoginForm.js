@@ -7,7 +7,7 @@ export const LoginForm = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    dispatch(setUser(e.target.username.value));
+    dispatch(setUser(e.target.elements.username.value));
   };
 
   return (

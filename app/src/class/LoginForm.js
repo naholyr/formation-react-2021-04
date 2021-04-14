@@ -8,7 +8,7 @@ class DumbLoginForm extends Component {
   onSubmit = (e) => {
     const { dispatch } = this.props;
     e.preventDefault();
-    dispatch(setUser(e.target.username.value));
+    dispatch(setUser(e.target.elements.username.value));
   };
 
   render() {

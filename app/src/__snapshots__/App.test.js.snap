@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App fill login form 1`] = `
+<div>
+  <h1>
+    Motux
+  </h1>
+  <div>
+    Loading…
+  </div>
+</div>
+`;
+
+exports[`App snapshot 1`] = `
+<div>
+  <h1>
+    Motux
+  </h1>
+  <form
+    class="LoginForm"
+  >
+    <input
+      minlength="2"
+      name="username"
+      placeholder="Your name"
+      required=""
+    />
+    <button>
+      Log in
+    </button>
+  </form>
+</div>
+`;
