@@ -8,6 +8,8 @@ import { Provider } from "react-redux";
 
 const store = initStore();
 
+// store.dispatch(action)
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>

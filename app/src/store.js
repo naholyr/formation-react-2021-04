@@ -5,7 +5,9 @@ export const initialState = {
     name: null,
   },
   game: {
+    loaded: false,
     trials: [
+      /*
       {
         name: "Coco",
         word: [
@@ -22,83 +24,18 @@ export const initialState = {
         ],
         win: false,
       },
-      {
-        name: "Nicolas",
-        word: [
-          ["B", 0],
-          ["I", 1],
-          ["J", 0],
-          ["O", 0],
-          ["U", 1],
-          ["T", 1],
-          ["I", 1],
-          ["E", 2],
-          ["R", 1],
-          ["S", 1],
-        ],
-        win: false,
-      },
-      {
-        name: "Coco",
-        word: [
-          ["T", 1],
-          ["E", 1],
-          ["L", 0],
-          ["E", 1],
-          ["V", 0],
-          ["I", 1],
-          ["S", 1],
-          ["I", 1],
-          ["O", 0],
-          ["N", 1],
-        ],
-        win: false,
-      },
-      {
-        name: "Nicolas",
-        word: [
-          ["A", 0],
-          ["B", 0],
-          ["R", 1],
-          ["I", 1],
-          ["C", 0],
-          ["O", 0],
-          ["T", 1],
-          ["I", 1],
-          ["E", 1],
-          ["R", 1],
-        ],
-        win: false,
-      },
+      */
     ],
     scores: [
+      /*
       {
         name: "Renaud",
         score: 9,
       },
-      {
-        name: "test",
-        score: 7,
-      },
-      {
-        name: "Coco",
-        score: 0,
-      },
-      {
-        name: "Romain F",
-        score: 0,
-      },
-      {
-        name: "ben",
-        score: 0,
-      },
-      {
-        name: "Nicolas",
-        score: 0,
-      },
+      */
     ],
-    wordLength: 10,
-    inputDisabled: false,
+    wordLength: 0,
+    inputDisabled: true,
   },
 };
 
@@ -113,6 +50,20 @@ export const userReducer = (state = initialState.user, action) => {
 
 export const gameReducer = (state = initialState.game, action) => {
   switch (action.type) {
+    case "SET_GAME":
+      if (action.payload.game) {
+        return {
+          ...state,
+          ...action.payload.game,
+          loaded: true,
+          // trials: action.payload.game.trials,
+          // scores: action.payload.game.scores,
+          // wordLength: action.payload.game.wordLength,
+        };
+      } else {
+        // payload.game === null => reset state
+        return initialState.game;
+      }
     default:
       return state;
   }

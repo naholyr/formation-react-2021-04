@@ -1,10 +1,10 @@
-import { initialState } from "../store";
+import { useSelector } from "react-redux";
 import { GuessItem } from "./GuessItem";
 import "./GuessList.css";
 
 export const GuessList = () => {
-  const trials = initialState.game.trials;
-  const username = initialState.user.name;
+  const trials = useSelector((state) => state.game.trials);
+  const username = useSelector((state) => state.user.name);
 
   const guessItems = trials.map(({ name, word }, index) => {
     return (

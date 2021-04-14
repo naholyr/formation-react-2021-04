@@ -12,7 +12,13 @@ export const LoginForm = () => {
 
   return (
     <form className="LoginForm" onSubmit={onSubmit}>
-      <input name="username" placeholder="Your name" autoFocus />
+      <input
+        name="username"
+        placeholder="Your name"
+        autoFocus
+        required
+        minLength={2}
+      />
       <button>Log in</button>
     </form>
   );

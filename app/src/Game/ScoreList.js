@@ -1,10 +1,10 @@
-import { initialState } from "../store";
+import { useSelector } from "react-redux";
 import { ScoreItem } from "./ScoreItem";
 import "./ScoreList.css";
 
 export const ScoreList = () => {
-  const scores = initialState.game.scores;
-  const username = initialState.user.name;
+  const scores = useSelector((state) => state.game.scores);
+  const username = useSelector((state) => state.user.name);
 
   const scoreItems = scores.map(({ name, score }) => {
     return (

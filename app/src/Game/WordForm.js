@@ -1,10 +1,11 @@
-import { initialState } from "../store";
+import { useSelector } from "react-redux";
 import "./WordForm.css";
 
 export const WordForm = () => {
-  const wordLength = initialState.game.wordLength;
+  // const wordLength = initialState.game.wordLength;
+  const wordLength = useSelector((state) => state.game.wordLength);
 
-  const inputStyle = { width: `${wordLength * 2}rem` };
+  const inputStyle = { width: `${Math.max(wordLength * 2, 11)}rem` };
 
   return (
     <form className="WordForm">
