@@ -1,6 +1,12 @@
+import { memo } from "react";
+
 const LETTER_STATUS = ["incorrect", "misplaced", "correct"];
 
-export const GuessItem = ({ isMyself = false, name, word }) => {
+export const GuessItem = memo(function GuessItem({
+  isMyself = false,
+  name,
+  word,
+}) {
   const clsName = isMyself ? "myself" : "";
 
   const letters = word.map(([letter, status], index) => {
@@ -20,4 +26,4 @@ export const GuessItem = ({ isMyself = false, name, word }) => {
       {letters}
     </li>
   );
-};
+});

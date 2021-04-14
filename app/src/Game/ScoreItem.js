@@ -3,7 +3,7 @@ import { bool } from "prop-types";
 import { string } from "prop-types";
 import { memo, PureComponent } from "react";
 
-export const ScoreItem = memo(({ name, score, isMyself = false }) => {
+export const ScoreItem = memo(function ({ name, score, isMyself = false }) {
   return (
     <li className={isMyself ? "myself" : ""}>
       <strong className="player">{name}</strong>

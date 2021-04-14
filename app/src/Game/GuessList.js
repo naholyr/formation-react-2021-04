@@ -1,8 +1,9 @@
+import { memo } from "react";
 import { useSelector } from "react-redux";
 import { GuessItem } from "./GuessItem";
 import "./GuessList.css";
 
-export const GuessList = () => {
+export const GuessList = memo(function GuessList() {
   const trials = useSelector((state) => state.game.trials);
   const username = useSelector((state) => state.user.name);
 
@@ -18,4 +19,4 @@ export const GuessList = () => {
   });
 
   return <ul className="GuessList">{guessItems}</ul>;
-};
+});
