@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Store Reducer should set username 1`] = `
+Object {
+  "game": Object {
+    "inputDisabled": true,
+    "loaded": false,
+    "scores": Array [],
+    "trials": Array [],
+    "wordLength": 0,
+  },
+  "user": Object {
+    "name": "toto",
+  },
+}
+`;

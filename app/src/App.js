@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { loadGame, login, logout, relogin } from "./motux-api";
 import { setUser } from "./actions";
+import { selectUsername } from "./selectors";
 // const Game = lazy(() =>
 //   import("./Game/Game").then((m) => ({ default: m.Game }))
 // );
@@ -14,7 +15,7 @@ function App() {
   // useSelector(selector : state => any)
   // - store.subscribe => à chaque update du store, on refait la sélection
   // - "faire la sélection" = selector(state actuel du store) => valeur retournée par le hook
-  const username = useSelector((state) => state.user.name);
+  const username = useSelector(selectUsername);
   const loaded = useSelector((state) => state.game.loaded);
   const dispatch = useDispatch();
 
