@@ -5,10 +5,11 @@ import "./index.css";
 import { initStore } from "./store";
 // import reportWebVitals from './reportWebVitals';
 import { Provider } from "react-redux";
+import { listenToGameEvents } from "./motux-api";
 
 const store = initStore();
 
-// store.dispatch(action)
+listenToGameEvents(store.dispatch);
 
 ReactDOM.render(
   <React.StrictMode>

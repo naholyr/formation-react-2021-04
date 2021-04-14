@@ -1,14 +1,37 @@
+import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
+import { tryWord } from "../motux-api";
 import "./WordForm.css";
 
 export const WordForm = () => {
   // const wordLength = initialState.game.wordLength;
   const wordLength = useSelector((state) => state.game.wordLength);
+  const isDisabled = useSelector((state) => state.game.inputDisabled);
+
+  const toto = useRef(1); // { current: 1 }
+  useEffect(() => {
+    console.log("WordForm#render", toto.current++);
+  });
+
+  // Focus on re-enable
+  const inputRef = useRef(); // { current: undefined }
+  useEffect(() => {
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isDisabled]);
 
   const inputStyle = { width: `${Math.max(wordLength * 2, 11)}rem` };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    tryWord(e.target.word.value);
+    e.target.word.value = "";
+    e.target.word.focus();
+  };
+
   return (
-    <form className="WordForm">
+    <form className="WordForm" onSubmit={handleSubmit}>
       <input
         type="text"
         name="word"
@@ -19,6 +42,8 @@ export const WordForm = () => {
         maxLength={wordLength}
         placeholder={`${wordLength} lettres`}
         style={inputStyle}
+        disabled={isDisabled}
+        ref={inputRef}
       />
     </form>
   );

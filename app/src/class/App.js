@@ -56,23 +56,26 @@ class App extends Component {
     }
   }
 
+  controller = null; // set in constructor
+
   handleLogin() {
     const { username, dispatch } = this.props;
     const token = localStorage.getItem("token");
 
+    this.controller = new AbortController();
     // token && username => already fully identified
     // !token && !username => not yet filled login form
     if ((username && !token) || (token && !username)) {
-      const controller = new AbortController();
+      this.controller = new AbortController();
       if (token) {
         // relogin (token => username)
-        relogin(token, controller.signal).then((username) => {
+        relogin(token, this.controller.signal).then((username) => {
           dispatch(setUser(username)); // state.user.name = null => username
         });
         loadGame(token, dispatch); // state.game.loaded = false => true
       } else {
         // login (username => token)
-        login(username, controller.signal)
+        login(username, this.controller.signal)
           .then((token) => {
             loadGame(token, dispatch);
           })
@@ -81,15 +84,11 @@ class App extends Component {
             logout();
           });
       }
-      return () => {
-        controller.abort();
-        logout();
-      };
     }
   }
 
   handleLogout() {
-    // TODO
+    this.controller.abort();
     logout();
   }
 }
@@ -99,4 +98,5 @@ const mapStateToProps = (state) => ({
   loaded: state.game.loaded,
 });
 
+// High-Order-Component
 export default connect(mapStateToProps)(App);

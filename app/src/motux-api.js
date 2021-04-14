@@ -1,6 +1,12 @@
 /* globals io:readonly */ // loaded from Motux server
 
-import { setGame } from "./actions";
+import {
+  addTrial,
+  setGame,
+  setInputDisabled,
+  setScores,
+  startNewGame,
+} from "./actions";
 
 const HOST = process.env.REACT_APP_MOTUX_HOST;
 
@@ -43,4 +49,40 @@ export const loadGame = (token, dispatch) => {
 
 export const logout = () => {
   socket.emit("logout");
+};
+
+export const tryWord = (string) => {
+  socket.emit("tryWord", string);
+};
+
+export const listenToGameEvents = (dispatch) => {
+  socket.on("disableInput", () => {
+    dispatch(setInputDisabled(true));
+  });
+
+  socket.on("enableInput", () => {
+    dispatch(setInputDisabled(false));
+  });
+
+  socket.on("failure", (code) => {
+    // TODO display error
+    console.error("Failure", code);
+  });
+
+  socket.on("winner", (username) => {
+    // TODO display winner
+    console.warn("Winner!", username);
+  });
+
+  socket.on("addTrial", (trial) => {
+    dispatch(addTrial(trial));
+  });
+
+  socket.on("updateScores", (scores) => {
+    dispatch(setScores(scores));
+  });
+
+  socket.on("wordLength", (length) => {
+    dispatch(startNewGame(length));
+  });
 };

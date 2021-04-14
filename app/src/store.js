@@ -1,5 +1,9 @@
 import { combineReducers, createStore } from "redux";
 
+/**
+ * dispatch → reducer → new state → selector → render
+ */
+
 export const initialState = {
   user: {
     name: null,
@@ -50,7 +54,7 @@ export const userReducer = (state = initialState.user, action) => {
 
 export const gameReducer = (state = initialState.game, action) => {
   switch (action.type) {
-    case "SET_GAME":
+    case "SET_GAME": // payload = { game }
       if (action.payload.game) {
         return {
           ...state,
@@ -64,6 +68,14 @@ export const gameReducer = (state = initialState.game, action) => {
         // payload.game === null => reset state
         return initialState.game;
       }
+    case "SET_INPUT_DISABLED": // payload = { disabled }
+      return { ...state, inputDisabled: action.payload.disabled };
+    case "ADD_TRIAL": // payload = { trial }
+      return { ...state, trials: [...state.trials, action.payload.trial] };
+    case "SET_SCORES": // payload = { scores }
+      return { ...state, scores: action.payload.scores };
+    case "NEW_GAME": // payload = { wordLength }
+      return { ...state, trials: [], wordLength: action.payload.wordLength };
     default:
       return state;
   }

@@ -31,7 +31,7 @@ window.tryWord = (string) => {
   socket.emit("tryWord", string);
 };
 
-socket.on("disabledInput", () => {
+socket.on("disableInput", () => {
   disabledInput = true;
 });
 
